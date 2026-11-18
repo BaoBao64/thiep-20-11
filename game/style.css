@@ -44,14 +44,6 @@ body {
     font-weight: 600;
     color: #ffd27a;
 }
-/* khung YouTube phát nhạc nền: ẩn khỏi màn hình */
-.yt {
-    position: fixed;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-}
 .mute {
     border: 1px solid #30363d;
     background: #161b22;

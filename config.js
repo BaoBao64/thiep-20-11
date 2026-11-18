@@ -213,12 +213,12 @@ $ git push origin tuong-lai`,
     ],
   },
 
-  /* ---------- GẮN GAME (để sau) ----------
+  /* ---------- GAME SCP ICT ----------
      enabled: true  -> phải thắng game mới mở được thiệp (thiệp là phần quà).
      mode: "embed"    -> game mở ngay trong trang (iframe), thắng là hiện thiệp.
-           "redirect" -> chuyển sang trang game; thắng thì quay về
-                         index.html?gift=unlocked
-     Xem game/index.html để biết game cần gọi gì khi người chơi thắng.     */
+           "redirect" -> chuyển sang trang game; thắng thì quay về thiệp.
+     MỖI LẦN mở thiệp (kể cả bấm "Xem lại code") đều phải thắng game lại.
+     Game gọi moQua() khi người chơi thắng (xem game/main.js).              */
   game: {
     enabled: true,
     url: "game/index.html",

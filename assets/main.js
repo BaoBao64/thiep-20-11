@@ -12,16 +12,26 @@
 
     $("#scene").innerHTML = U.sceneHTML();
 
-    /* ---------- GAME: trạng thái mở khoá ---------- */
+    /* ---------- GAME: trạng thái mở khoá ----------
+       Chỉ nhớ "đã thắng" trong lần mở trang này (biến trong bộ nhớ),
+       nên MỖI LẦN mở thiệp đều phải thắng game lại.
+       Ngoại lệ duy nhất: vừa thắng ở trang game riêng (mode "redirect") thì
+       game để lại 1 "vé" dùng một lần trong sessionStorage.                  */
     const game = C.game || {};
-    if (params.get("gift") === "unlocked") store.set(U.UNLOCK_KEY, true);
-    const unlocked = () => !game.enabled || store.get(U.UNLOCK_KEY, false) === true;
+    let won = false;
+    try {
+      if (sessionStorage.getItem(U.WON_ONCE_KEY) === "1") { won = true; sessionStorage.removeItem(U.WON_ONCE_KEY); }
+      localStorage.removeItem(U.UNLOCK_KEY);   // xoá kiểu mở khoá vĩnh viễn của bản cũ
+    } catch (e) {}
+    const justWon = won;
+    const unlocked = () => !game.enabled || won;
 
     /* ================= MÀN 1: CODE ================= */
     let typer = null, termTimers = [];
 
     function startIntro() {
       const I = C.intro;
+      won = false;                      // xem lại code = mở thiệp lại = phải thắng lại
       termTimers.forEach(clearTimeout); termTimers = []; termRun++;
       document.body.classList.add("intro-on");
       const intro = $("#intro");
@@ -106,7 +116,7 @@
     window.addEventListener("message", (e) => {
       const d = e.data;
       if (d === "GAME_WON" || (d && d.type === "GAME_WON")) {
-        store.set(U.UNLOCK_KEY, true); closeGame(); music.play(); openCard();
+        won = true; closeGame(); music.play(); openCard();
       }
     });
 
@@ -539,7 +549,8 @@
       $("#book").classList.add("show");
       $("#inside").hidden = false; $("#status").classList.add("go");
       const s = document.createElement("script"); s.src = "assets/editor.js?v=" + Date.now(); document.body.appendChild(s);
-    } else if (params.has("skip") || C.intro.enabled === false) {
+    } else if (justWon || (!game.enabled && (params.has("skip") || C.intro.enabled === false))) {
+      // ?skip=1 chỉ có tác dụng khi game đang tắt
       showStage();
       requestAnimationFrame(() => $("#book").classList.add("show"));
     } else startIntro();

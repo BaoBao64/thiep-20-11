@@ -80,7 +80,8 @@ Sau màn code, người xem phải chơi game và đạt **10 điểm** thì thi
 - Đổi mốc điểm: sửa `WIN_SCORE` ở đầu `game/main.js`.
 - Game dễ hơn: tăng `gap` (khe giữa 2 cột) hoặc giảm `dx` (tốc độ) trong object `pipes` ở `game/main.js`.
 - Tắt game (mở thiệp ngay, không cần chơi): trong `config.js` đổi `enabled: true` thành `enabled: false`.
-- Khi game chạy trong thiệp, game không tự phát nhạc vì thiệp đã phát rồi. Mở game như trang riêng thì game tự phát bài *Người Gieo Mầm Xanh* từ YouTube.
+- **Mỗi lần mở thiệp đều phải thắng lại**, kể cả khi bấm "Xem lại code". Thiệp không lưu trạng thái "đã thắng" lên máy, và `?skip=1` chỉ có tác dụng khi game đang tắt.
+- Game không có nhạc nền riêng, chỉ có tiếng hiệu ứng (nút 🔊 trong game để tắt).
 
 Cấu hình trong `config.js`:
 
@@ -90,11 +91,10 @@ game: { enabled: true, url: "game/index.html", mode: "embed" }
 
 - `enabled: true`: sau màn code, nút đổi thành `▶ choiGame()`. Phải thắng game thì thiệp (phần quà) mới mở.
 - `mode: "embed"`: game chạy ngay trong trang thiệp. Thắng là thiệp hiện ra luôn.
-- `mode: "redirect"`: chuyển sang trang game. Thắng thì quay về `index.html?gift=unlocked`.
+- `mode: "redirect"`: chuyển sang trang game. Thắng thì quay về `index.html` và thiệp mở ra.
 
 Khi người chơi thắng, game gọi hàm `moQua()` (trong `game/main.js`).
 
-Muốn chơi lại từ đầu (khoá quà lại), mở Console của trình duyệt và chạy `localStorage.removeItem("thiep2011_unlocked")`.
 
 ## Nhạc nền
 

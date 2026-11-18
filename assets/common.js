@@ -434,7 +434,7 @@
   window.Thiep = {
     $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode, typeSegments,
     STICKERS, bouquetSVG, sceneHTML, confetti, makeQR, encodeData, decodeData, THEMES, toast,
-    WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
+    WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", WON_ONCE_KEY: "thiep2011_won_once", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
     EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid,
   };
 })();

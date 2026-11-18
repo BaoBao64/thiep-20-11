@@ -6,8 +6,7 @@ const H = 640                 //  chiều cao "logic"
 const GROUND_H = 90           //  chiều cao dải đất (khung code editor)
 const DEG = Math.PI / 180     //  đổi độ sang radian
 const WIN_SCORE = 10          //  đạt 10 điểm là THẮNG
-const MUSIC_ID = 'sj_UDyfoo-A' //  mã video YouTube bài "Người Gieo Mầm Xanh"
-//  Game đang chạy bên trong trang thiệp (iframe)? Khi đó thiệp đã tự phát nhạc rồi.
+//  Game đang chạy bên trong trang thiệp (iframe) hay mở như trang riêng?
 const EMBEDDED = window.parent !== window
 
 const cvs = document.getElementById('game')
@@ -78,47 +77,6 @@ const sfx = {
     }
 }
 
-/************************
-***** NHẠC NỀN **********
-  Phát bài hát từ YouTube bằng YouTube IFrame API (khung video được giấu đi).
-  Trình duyệt chỉ cho phát nhạc SAU khi người chơi bấm/chạm lần đầu.
-************************/
-const music = {
-    player: null,
-    ready: false,
-    wantPlay: false,
-    load: function () {
-        //  tải thư viện của YouTube; nếu bị chặn thì game vẫn chạy bình thường, chỉ không có nhạc
-        window.onYouTubeIframeAPIReady = () => {
-            this.player = new YT.Player('yt', {
-                width: 200,
-                height: 200,
-                videoId: MUSIC_ID,
-                playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: MUSIC_ID, playsinline: 1 },
-                events: {
-                    onReady: () => {
-                        this.ready = true
-                        this.player.setVolume(45)
-                        if (this.wantPlay && !sfx.muted) this.player.playVideo()
-                    }
-                }
-            })
-        }
-        const tag = document.createElement('script')
-        tag.src = 'https://www.youtube.com/iframe_api'
-        tag.onerror = () => { }
-        document.head.appendChild(tag)
-    },
-    play: function () {
-        this.wantPlay = true
-        if (this.ready && !sfx.muted) this.player.playVideo()
-    },
-    pause: function () {
-        if (this.ready) this.player.pauseVideo()
-    }
-}
-//  chỉ tự phát nhạc khi game mở như một trang riêng, tránh 2 bài nhạc chồng nhau
-if (!EMBEDDED) music.load()
 
 /************************
 ***** BỐI CẢNH **********
@@ -657,13 +615,13 @@ function ellipseHitsRect(cx, cy, rx, ry, r) {
 }
 //  Mở quà: báo cho trang thiệp biết người chơi đã thắng
 function moQua() {
-    try { localStorage.setItem('thiep2011_unlocked', 'true') } catch (e) { }
     if (EMBEDDED) {
         //  game đang nằm trong trang thiệp (mode: "embed")
         window.parent.postMessage({ type: 'GAME_WON' }, '*')
     } else {
-        //  game là trang riêng (mode: "redirect")
-        location.href = '../index.html?gift=unlocked'
+        //  game là trang riêng (mode: "redirect"): để lại "vé" dùng 1 lần rồi quay về thiệp
+        try { sessionStorage.setItem('thiep2011_won_once', '1') } catch (e) { }
+        location.href = '../index.html'
     }
 }
 function winNow() {
@@ -725,7 +683,6 @@ requestAnimationFrame(loop)
 *************************/
 const action = () => {
     sfx.init()
-    music.play()
     if (gameState.current === gameState.getReady) {
         gameState.current = gameState.play
         frame = 0                       //  để cột đầu tiên xuất hiện ngay
@@ -764,7 +721,5 @@ document.addEventListener('keydown', (e) => {
 muteBtn.addEventListener('click', () => {
     sfx.muted = !sfx.muted
     muteBtn.textContent = sfx.muted ? '🔇' : '🔊'
-    if (sfx.muted) music.pause()
-    else music.play()
     muteBtn.blur()
 })
