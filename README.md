@@ -89,9 +89,14 @@ Muốn chơi lại từ đầu (khoá quà lại), mở Console của trình duy
 
 ## Nhạc nền
 
-Mặc định là bài *Người Gieo Mầm Xanh* (Hoàng Dũng · Hứa Kim Tuyền). Mở `?edit`, vào mục **Nhạc nền** rồi:
+Mặc định là bài *Người Gieo Mầm Xanh* (Hoàng Dũng · Hứa Kim Tuyền). Nhạc tự phát từ màn code. Góc dưới bên trái có nút loa nhỏ để tắt hoặc bật.
 
-- **Dán link YouTube** của bài hát (nên dùng). Nhạc phát qua một khung video nhỏ ở góc dưới bên trái.
-- Hoặc **tải file mp3** của bạn lên. Lưu ý: file sẽ nằm công khai trong repo, nên chỉ dùng file bạn có quyền chia sẻ.
+**Nên dùng file mp3**, vì điện thoại (nhất là iPhone) thường không phát được tiếng của YouTube khi bị ẩn:
 
-Nhạc bắt đầu khi bấm nút mở thiệp. Có nút ▶ / ❚❚ để bật hoặc tắt.
+1. Đổi tên file nhạc thành đúng `nhac.mp3`.
+2. Trên GitHub, mở thư mục `assets`, bấm **Add file → Upload files**, chọn file, rồi bấm **Commit changes**.
+
+Xong là web tự dùng file đó, không cần sửa gì thêm. Khi chưa có file `assets/nhac.mp3`, web tạm dùng link YouTube trong `config.js`.
+
+Lưu ý: file nằm công khai trong repo, nên chỉ dùng file bạn có quyền chia sẻ.
+Trình duyệt chỉ cho phát có tiếng sau khi người xem chạm vào trang. Trước đó nhạc chạy tắt tiếng, nút loa nhấp nháy.

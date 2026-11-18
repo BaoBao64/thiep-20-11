@@ -234,8 +234,8 @@ $ git push origin tuong-lai`,
   music: {
     title: "Người Gieo Mầm Xanh",
     artist: "Hoàng Dũng · Hứa Kim Tuyền",
-    youtube: "https://youtu.be/J3IRYx3PzzM",
-    url: "",
+    youtube: "https://youtu.be/J3IRYx3PzzM",   // dự phòng khi chưa có file mp3
+    url: "assets/nhac.mp3",                    // tải file nhạc lên GitHub với đúng tên này
     start: 0,          // bắt đầu phát từ giây thứ mấy
   },
 

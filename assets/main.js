@@ -415,9 +415,11 @@
       function start() {
         if (!want || errored) return;
         if (audio) {
-          audio.muted = false;
-          audio.play().then(() => { muted = false; ui(); }).catch(() => {
-            audio.muted = true; muted = true; audio.play().catch(() => {}); ui();
+          const a = audio;
+          a.muted = false;
+          a.play().then(() => { muted = false; ui(); }).catch(() => {
+            if (a !== audio || a.error) return;
+            a.muted = true; muted = true; a.play().catch(() => {}); ui();
           });
         } else if (yt && yt.playVideo) {
           yt.unMute(); yt.playVideo();
@@ -439,9 +441,18 @@
         if (!has()) return;
         if (m.url) {
           audio = new Audio(U.imgSrc(m.url)); audio.loop = true; audio.preload = "auto";
+          audio.setAttribute("playsinline", "");
           audio.addEventListener("loadedmetadata", () => { if (m.start) audio.currentTime = +m.start; }, { once: true });
+          // chưa có file mp3 (hoặc lỗi) -> dùng YouTube nếu có
+          audio.addEventListener("error", () => {
+            audio = null;
+            if (ytId(m.youtube)) setupYT(m); else { btn.hidden = true; }
+          }, { once: true });
           start();
-        } else {
+        } else setupYT(m);
+      }
+      function setupYT(m) {
+        {
           const id = ytId(m.youtube);
           loadYT().then(() => {
             yt = new YT.Player("ytBox", {
@@ -459,8 +470,11 @@
       function play() {
         if (!has()) return;
         want = true; muted = false;
-        if (audio) { audio.muted = false; audio.play().catch(() => {}); }
-        else if (yt && yt.playVideo) { yt.unMute(); yt.playVideo(); }
+        if (audio) {
+          const a = audio;
+          a.muted = false;
+          a.play().then(() => { muted = false; ui(); }).catch(() => { if (a !== audio || a.error) return; a.muted = true; muted = true; a.play().catch(() => {}); ui(); });
+        } else if (yt && yt.playVideo) { yt.unMute(); yt.playVideo(); }
         ui();
       }
       function stop() {
@@ -476,13 +490,15 @@
       // Lần chạm / bấm đầu tiên ở bất kỳ đâu: bật tiếng nếu đang phát tắt tiếng
       const unlock = (e) => {
         if (e.target.closest && e.target.closest("#soundBtn")) return;
-        if (want && muted) play();
+        if (want && (muted || !isPlaying())) play();
         // giữ lại cho tới khi nhạc thật sự phát có tiếng
         setTimeout(() => {
-          if (want && !muted && isPlaying()) ["pointerdown", "keydown", "touchend"].forEach((t) => document.removeEventListener(t, unlock, true));
+          if (want && !muted && isPlaying()) UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true));
         }, 800);
       };
-      ["pointerdown", "keydown", "touchend"].forEach((t) => document.addEventListener(t, unlock, true));
+      // iPhone chỉ cho bật tiếng trong click / touchend / keydown (không phải pointerdown)
+      const UNLOCK_EVENTS = ["click", "touchend", "keydown"];
+      UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true));
       return { setup, play, stop, has, playing: isPlaying };
     })();
 
