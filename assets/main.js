@@ -171,7 +171,6 @@
       intro.hidden = true; intro.classList.remove("leave");
       document.body.classList.remove("intro-on");
       $("#cardStage").hidden = false;
-      $("#player").hidden = !music.has();
       window.scrollTo(0, 0);
     }
     function openCard() {
@@ -379,22 +378,28 @@
       } else U.toast("Đã xoá lời chúc.");
     });
 
-    /* ================= NHẠC ================= */
+    /* ================= NHẠC =================
+       Tự phát ngay khi mở trang. Trình duyệt không cho phát CÓ TIẾNG khi người xem
+       chưa chạm vào trang, nên nếu bị chặn: phát tắt tiếng trước, rồi bật tiếng ở
+       lần chạm / bấm phím đầu tiên. Chỉ có một nút loa nhỏ ở góc để tắt/bật. */
     const music = (function () {
-      let audio = null, yt = null, ytReadyP = null, want = false, playing = false, key = "";
+      let audio = null, yt = null, ytReadyP = null, key = "", errored = false;
+      let want = !EDIT;        // người xem muốn nghe nhạc (bấm nút loa để đổi)
+      let muted = false;       // đang phát tắt tiếng vì trình duyệt chặn
+      const btn = $("#soundBtn");
       const ytId = (u) => {
         const m = String(u || "").match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/|live\/)([\w-]{11})/);
         return m ? m[1] : /^[\w-]{11}$/.test(u || "") ? u : null;
       };
       const M = () => C.music || {};
       const has = () => !!(M().url || ytId(M().youtube));
-      function ui(on) {
-        playing = on;
-        $("#player").classList.toggle("playing", on);
-        $("#plToggle").textContent = on ? "❚❚" : "▶";
-        $("#plToggle").setAttribute("aria-label", on ? "Tạm dừng nhạc" : "Phát nhạc");
-        $("#musicBtn").classList.toggle("on", on);
-        $("#musicBtn").textContent = on ? "♪ Đang phát" : "♪ Nhạc";
+      const isPlaying = () => (audio ? !audio.paused : yt && yt.getPlayerState ? yt.getPlayerState() === 1 : false);
+      function ui() {
+        const on = want && !muted && !errored;
+        btn.classList.toggle("on", on);
+        btn.classList.toggle("muted", want && muted);
+        btn.setAttribute("aria-label", errored ? "Mở bài hát trên YouTube" : on ? "Tắt nhạc" : "Bật nhạc");
+        btn.title = errored ? "Không phát được nhạc ở đây, bấm để mở YouTube" : on ? "Tắt nhạc" : muted ? "Chạm vào trang để bật tiếng" : "Bật nhạc";
       }
       function loadYT() {
         if (ytReadyP) return ytReadyP;
@@ -406,59 +411,82 @@
         });
         return ytReadyP;
       }
+      // Thử phát có tiếng; nếu trình duyệt chặn thì phát tắt tiếng
+      function start() {
+        if (!want || errored) return;
+        if (audio) {
+          audio.muted = false;
+          audio.play().then(() => { muted = false; ui(); }).catch(() => {
+            audio.muted = true; muted = true; audio.play().catch(() => {}); ui();
+          });
+        } else if (yt && yt.playVideo) {
+          yt.unMute(); yt.playVideo();
+          setTimeout(() => {
+            if (!want) return;
+            if (yt.getPlayerState() === 1 && !yt.isMuted()) { muted = false; ui(); return; }
+            yt.mute(); yt.playVideo(); muted = true; ui();
+          }, 1200);
+        }
+      }
       function setup() {
         const m = M(), k = JSON.stringify([m.url, m.youtube, m.start]);
-        if (k === key) { refreshInfo(); return; }
-        key = k; stop();
+        btn.hidden = !has();
+        if (k === key) return;
+        key = k; errored = false;
         if (audio) { audio.pause(); audio = null; }
         if (yt) { try { yt.destroy(); } catch (e) {} yt = null; $("#ytWrap").innerHTML = '<div id="ytBox"></div>'; }
-        $("#ytWrap").hidden = true;
-        refreshInfo();
+        ui();
         if (!has()) return;
         if (m.url) {
           audio = new Audio(U.imgSrc(m.url)); audio.loop = true; audio.preload = "auto";
           audio.addEventListener("loadedmetadata", () => { if (m.start) audio.currentTime = +m.start; }, { once: true });
-          audio.addEventListener("play", () => ui(true)); audio.addEventListener("pause", () => ui(false));
+          start();
         } else {
           const id = ytId(m.youtube);
-          $("#ytWrap").hidden = false;
           loadYT().then(() => {
             yt = new YT.Player("ytBox", {
               width: 200, height: 113, videoId: id,
-              playerVars: { start: +m.start || 0, playsinline: 1, rel: 0, loop: 1, playlist: id },
+              playerVars: { start: +m.start || 0, playsinline: 1, rel: 0, loop: 1, playlist: id, controls: 0 },
               events: {
-                onReady: () => { if (want) yt.playVideo(); },
-                onStateChange: (e) => ui(e.data === 1),
-                onError: (e) => {
-                  // 101/150: chủ video không cho phát trên web khác -> mở thẳng YouTube
-                  $("#ytWrap").innerHTML = `<a class="pl-yt" href="https://youtu.be/${id}" target="_blank" rel="noopener">Mở bài hát trên YouTube ↗</a>`;
-                  ui(false);
-                },
+                onReady: start,
+                onError: () => { errored = true; ui(); },
               },
             });
           });
         }
       }
-      function refreshInfo() {
-        $("#plTitle").textContent = M().title || "Nhạc nền";
-        $("#plArtist").textContent = M().artist || "";
-        $("#musicBtn").hidden = !has();
-        if (!$("#cardStage").hidden) $("#player").hidden = !has();
-      }
+      // Bật nhạc có tiếng (gọi trong lúc người xem chạm/bấm)
       function play() {
         if (!has()) return;
-        want = true;
-        if (audio) audio.play().catch(() => {});
-        else if (yt && yt.playVideo) yt.playVideo();
+        want = true; muted = false;
+        if (audio) { audio.muted = false; audio.play().catch(() => {}); }
+        else if (yt && yt.playVideo) { yt.unMute(); yt.playVideo(); }
+        ui();
       }
-      function stop() { want = false; if (audio) audio.pause(); if (yt && yt.pauseVideo) yt.pauseVideo(); }
-      const toggle = () => (playing ? stop() : play());
-      $("#plToggle").addEventListener("click", toggle);
-      $("#musicBtn").addEventListener("click", toggle);
-      return { setup, play, stop, has };
+      function stop() {
+        want = false;
+        if (audio) audio.pause();
+        if (yt && yt.pauseVideo) yt.pauseVideo();
+        ui();
+      }
+      btn.addEventListener("click", () => {
+        if (errored) { window.open("https://youtu.be/" + ytId(M().youtube), "_blank", "noopener"); return; }
+        if (want && !muted) stop(); else play();
+      });
+      // Lần chạm / bấm đầu tiên ở bất kỳ đâu: bật tiếng nếu đang phát tắt tiếng
+      const unlock = (e) => {
+        if (e.target.closest && e.target.closest("#soundBtn")) return;
+        if (want && muted) play();
+        // giữ lại cho tới khi nhạc thật sự phát có tiếng
+        setTimeout(() => {
+          if (want && !muted && isPlaying()) ["pointerdown", "keydown", "touchend"].forEach((t) => document.removeEventListener(t, unlock, true));
+        }, 800);
+      };
+      ["pointerdown", "keydown", "touchend"].forEach((t) => document.addEventListener(t, unlock, true));
+      return { setup, play, stop, has, playing: isPlaying };
     })();
 
-    $("#replayBtn").addEventListener("click", () => { music.stop(); startIntro(); });
+    $("#replayBtn").addEventListener("click", () => startIntro());
 
     // Cho game, trang khác hoặc chế độ chỉnh sửa gọi
     Object.assign(U, { openCard, openBook, render, renderWall, loadWall, reloadMusic: () => music.setup() });
@@ -473,7 +501,6 @@
       $("#cardStage").hidden = false;
       $("#book").classList.add("show");
       $("#inside").hidden = false; $("#status").classList.add("go");
-      $("#player").hidden = !music.has();
       const s = document.createElement("script"); s.src = "assets/editor.js?v=" + Date.now(); document.body.appendChild(s);
     } else if (params.has("skip") || C.intro.enabled === false) {
       showStage();

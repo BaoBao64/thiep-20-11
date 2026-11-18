@@ -300,7 +300,7 @@
       } catch (e) { busy(""); toast(e.message, 4500); }
     });
     on("epMp3Del", "click", () => { C.music.url = ""; changed({ render: false }); U.reloadMusic(); build(); });
-    on("epPlay", "click", () => { U.reloadMusic(); setTimeout(() => document.getElementById("plToggle").click(), 300); });
+    on("epPlay", "click", () => { U.reloadMusic(); setTimeout(() => document.getElementById("soundBtn").click(), 300); });
     bindCode();
   }
 
