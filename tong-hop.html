@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=20261118o">
-  <link rel="stylesheet" href="assets/tonghop.css?v=20261118o">
+  <link rel="stylesheet" href="assets/style.css?v=20261118p">
+  <link rel="stylesheet" href="assets/tonghop.css?v=20261118p">
 </head>
 <body class="page-sum">
   <main class="sum-wrap">
@@ -53,13 +53,30 @@
           <button class="ep-mini" id="copyAll" type="button">Sao chép tất cả</button>
           <button class="ep-mini" id="csv" type="button">Tải file Excel</button>
           <button class="ep-mini" id="print" type="button">In</button>
+          <button class="ep-mini danger" id="manage" type="button">🔒 Quản lý / xoá</button>
+        </div>
+      </div>
+
+      <div class="sum-admin" id="adminBar" hidden>
+        <div class="sa-login" id="adminLogin">
+          <label for="adminKey">Mật khẩu quản trị <small>(ADMIN_KEY trong Apps Script)</small></label>
+          <div class="sa-row">
+            <input id="adminKey" type="password" autocomplete="off" placeholder="Nhập mật khẩu">
+            <button class="btn navy" id="adminGo" type="button">Vào chế độ quản lý</button>
+          </div>
+        </div>
+        <div class="sa-tools" id="adminTools" hidden>
+          <span class="sa-on">● Đang ở chế độ quản lý</span>
+          <label class="sa-all"><input type="checkbox" id="selAll"> Chọn tất cả</label>
+          <button class="btn" id="delSel" type="button" disabled>Xoá mục đã chọn</button>
+          <button class="ep-mini" id="adminOut" type="button">Thoát quản lý</button>
         </div>
       </div>
 
       <div class="sum-table-wrap">
         <table class="sum-table">
           <thead>
-            <tr><th class="c-no">#</th><th class="c-name">Người gửi</th><th class="c-class">Lớp</th><th>Lời chúc</th><th class="c-lang">Ngôn ngữ</th><th class="c-time">Thời gian</th></tr>
+            <tr><th class="c-sel"><span class="sr">Chọn</span></th><th class="c-no">#</th><th class="c-name">Người gửi</th><th class="c-class">Lớp</th><th>Lời chúc</th><th class="c-lang">Ngôn ngữ</th><th class="c-time">Thời gian</th><th class="c-act"><span class="sr">Xoá</span></th></tr>
           </thead>
           <tbody id="rows"></tbody>
         </table>
@@ -70,8 +87,8 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="config.js?v=20261118o"></script>
-  <script src="assets/common.js?v=20261118o"></script>
-  <script src="assets/tonghop.js?v=20261118o"></script>
+  <script src="config.js?v=20261118p"></script>
+  <script src="assets/common.js?v=20261118p"></script>
+  <script src="assets/tonghop.js?v=20261118p"></script>
 </body>
 </html>

@@ -54,3 +54,27 @@
   .sum-panel, .stat { box-shadow: none; border: 1px solid #ddd; }
   .sum-table tbody tr { break-inside: avoid; }
 }
+
+/* Chế độ quản lý / xoá */
+.sum-admin { padding: 14px 16px; border-bottom: 1px solid #e8eef6; background: #fff7f9; }
+.sa-login label { display: block; font: 700 14px var(--f-body); color: var(--navy); margin-bottom: 8px; }
+.sa-login small { font-weight: 500; color: var(--ink-2); }
+.sa-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.sa-row input { flex: 1 1 220px; min-width: 0; font: 15px var(--f-body); padding: 10px 14px; border: 2px solid #ffd0db; border-radius: 12px; outline: none; }
+.sa-row input:focus { border-color: var(--rose); }
+.sa-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sa-on { font: 700 13px var(--f-body); color: var(--rose); }
+.sa-all { display: inline-flex; gap: 6px; align-items: center; font: 600 14px var(--f-body); color: var(--navy); cursor: pointer; }
+.sa-tools .btn { padding: 9px 18px; font-size: 14px; }
+.c-sel, .c-act { display: none; }
+.sum-admin-on .c-sel, .sum-admin-on .c-act { display: table-cell; }
+.c-sel { width: 36px; }
+.c-sel input, .sa-all input { width: 18px; height: 18px; accent-color: var(--rose); cursor: pointer; }
+.c-act { width: 70px; text-align: right; }
+.row-del { border: 0; cursor: pointer; padding: 7px 12px; border-radius: 9px; background: #ffe3ea; color: var(--rose); font: 700 13px var(--f-body); }
+.row-del:hover { background: var(--rose); color: #fff; }
+#rows tr.removing { opacity: .35; transition: opacity .3s; }
+@media (max-width: 760px) {
+  .sum-admin-on .sum-table td.c-sel, .sum-admin-on .sum-table td.c-act { display: inline-block; width: auto; margin-right: 10px; }
+  .sum-admin-on .sum-table td.c-act { float: right; }
+}

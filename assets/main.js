@@ -409,7 +409,7 @@
       $("#notes").innerHTML = wallList.slice().reverse().map((w, i) => {
         const th = U.THEMES[w.theme] || U.THEMES[keys[i % keys.length]];
         const rot = ((i * 37) % 7) - 3, id = wishId(w);
-        const canDel = EDIT || mine.has(id);
+        const canDel = EDIT || mine.has(id) || !!store.get(U.ADMIN_KEY, "");
         return `<figure class="note" data-id="${esc(id)}" style="--a:${th.a};--b:${th.b};--ink:${th.ink};--rot:${rot}deg">
           <span class="note-pin"></span>
           ${canDel ? `<button class="note-del" type="button" data-id="${esc(id)}" title="Xoá lời chúc" aria-label="Xoá lời chúc">×</button>` : ""}
@@ -426,23 +426,24 @@
       const id = b.dataset.id;
       const w = wallList.find((x) => wishId(x) === id); if (!w) return;
       const own = store.get(U.WISH_KEY, []).find((x) => wishId(x) === id);
-      if (!window.confirm(EDIT ? `Xoá lời chúc của “${w.name || "Một học trò"}” khỏi bức tường?` : "Xoá lời chúc của bạn khỏi bức tường?")) return;
-      // xoá trên máy này
-      store.set(U.WISH_KEY, store.get(U.WISH_KEY, []).filter((x) => wishId(x) !== id));
-      store.set(U.HIDDEN_KEY, [...new Set([...store.get(U.HIDDEN_KEY, []), id])]);
-      const card = b.closest(".note"); card.classList.add("removing");
-      setTimeout(() => { wallList = wallList.filter((x) => wishId(x) !== id); renderWall(); }, 350);
-      // xoá trên Google Sheet
+      const admin = store.get(U.ADMIN_KEY, "");
+      const isMine = !!(own && own.token);
+      if (!window.confirm(isMine ? "Xoá lời chúc của bạn khỏi bức tường?" : `Xoá lời chúc của “${w.name || "Một học trò"}” khỏi bức tường?`)) return;
       const ep = C.wishes && C.wishes.endpoint;
-      const key = store.get(U.ADMIN_KEY, "");
-      if (ep && w.id && (key || (own && own.token))) {
-        try {
-          await fetch(ep, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "delete", id: w.id, key, token: own && own.token }) });
-          U.toast("Đã xoá lời chúc.");
-        } catch (err) { U.toast("Đã ẩn trên máy này, nhưng chưa xoá được trên bảng tính. Bạn thử lại sau nhé."); }
-      } else if (ep && EDIT && !key) {
-        U.toast("Đã ẩn trên máy này. Nhập mật khẩu quản trị trong bảng chỉnh sửa để xoá hẳn cho mọi người.", 4200);
-      } else U.toast("Đã xoá lời chúc.");
+      if (ep && !admin && !isMine) {
+        U.toast("Cần nhập mật khẩu quản trị (trang Bảng tổng hợp → Quản lý) để xoá lời chúc của người khác.", 4500);
+        return;
+      }
+      const card = b.closest(".note"); card.classList.add("removing");
+      U.toast("Đang xoá...");
+      const res = await U.deleteWishes([{ id: w.id || id, token: own && own.token }], admin);
+      if (res.ok) {
+        wallList = wallList.filter((x) => wishId(x) !== id); renderWall();
+        U.toast("Đã xoá lời chúc.");
+      } else {
+        card.classList.remove("removing");
+        U.toast(res.unknown ? "Chưa kiểm tra được, bạn tải lại trang để xem đã xoá chưa." : "Chưa xoá được: mật khẩu không khớp ADMIN_KEY trong Apps Script.", 5000);
+      }
     });
 
     /* ================= NHẠC =================

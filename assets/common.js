@@ -71,6 +71,36 @@
   }
   ready.then(() => setTimeout(syncLocalWishes, 1500));
 
+  /* Lấy danh sách lời chúc từ Google Sheet */
+  async function fetchRemoteWishes() {
+    const ep = C.wishes && C.wishes.endpoint;
+    if (!ep) return null;
+    const r = await fetch(ep + (ep.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+    const j = await r.json();
+    return Array.isArray(j) ? j : j.data || j.wishes || [];
+  }
+
+  /* Xoá lời chúc. items: [{ id, token? }]. key: mật khẩu ADMIN_KEY (có thể trống nếu là chủ lời chúc).
+     Sau khi gửi lệnh xoá, tải lại danh sách để biết đã xoá được thật chưa. */
+  async function deleteWishes(items, key) {
+    const KEY = "thiep2011_wishes";
+    const ids = new Set(items.map((w) => String(w.id)));
+    store.set(KEY, store.get(KEY, []).filter((w) => !ids.has(String(w.id))));
+    const ep = C.wishes && C.wishes.endpoint;
+    if (!ep) return { ok: true, remaining: [] };
+    for (const w of items) {
+      if (!w.id) continue;
+      await fetch(ep, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "delete", id: w.id, key: key || "", token: w.token || "" }) });
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+    let list;
+    try { list = await fetchRemoteWishes(); } catch (e) { return { ok: false, unknown: true, remaining: items }; }
+    const still = new Set(list.map((w) => String(w.id)));
+    const remaining = items.filter((w) => w.id && still.has(String(w.id)));
+    return { ok: remaining.length === 0, remaining };
+  }
+
   const localImages = {};
   const imgSrc = (p) => localImages[p] || p;
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -456,6 +486,6 @@
     $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode, typeSegments,
     STICKERS, bouquetSVG, sceneHTML, confetti, makeQR, encodeData, decodeData, THEMES, toast,
     WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", WON_ONCE_KEY: "thiep2011_won_once", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
-    EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid, syncLocalWishes,
+    EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid, syncLocalWishes, fetchRemoteWishes, deleteWishes,
   };
 })();

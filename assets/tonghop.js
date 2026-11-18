@@ -24,9 +24,7 @@ window.Thiep.ready.then(function () {
     let list = [], remoteOk = false;
     if (ep) {
       try {
-        const r = await fetch(ep, { cache: "no-store" });
-        const j = await r.json();
-        list = Array.isArray(j) ? j : j.data || j.wishes || [];
+        list = await U.fetchRemoteWishes();
         remoteOk = true;
       } catch (e) { /* hiện cảnh báo bên dưới */ }
     }
@@ -66,14 +64,17 @@ window.Thiep.ready.then(function () {
     $("#stCount").textContent = all.length;
     $("#stPeople").textContent = new Set(all.map((w) => String(w.name || "").trim().toLowerCase()).filter(Boolean)).size;
     $("#stClasses").textContent = new Set(all.map((w) => String(w.className || "").trim().toUpperCase()).filter(Boolean)).size;
-    $("#rows").innerHTML = rows.map((w, i) => `<tr>
+    $("#rows").innerHTML = rows.map((w, i) => `<tr data-id="${esc(wishId(w))}">
+        <td class="c-sel"><input type="checkbox" class="row-sel" data-id="${esc(wishId(w))}" aria-label="Chọn lời chúc của ${esc(w.name || "Một học trò")}"${selected.has(wishId(w)) ? " checked" : ""}></td>
         <td class="c-no" data-label="#">${i + 1}</td>
         <td class="c-name" data-label="Người gửi"><b>${esc(w.name || "Một học trò")}</b>${w._local ? '<span class="tag">trên máy này</span>' : ""}</td>
         <td class="c-class" data-label="Lớp">${esc(w.className || "—")}</td>
         <td class="c-msg" data-label="Lời chúc">${esc(w.message)}</td>
         <td class="c-lang" data-label="Ngôn ngữ"><span class="lang"><b class="lang-dot" data-lang="${esc(w.lang || "js")}"></b>${esc(LANGS[w.lang] || w.lang || "")}</span></td>
         <td class="c-time" data-label="Thời gian">${esc(fmtTime(w.time))}</td>
+        <td class="c-act"><button class="row-del" type="button" data-id="${esc(wishId(w))}">Xoá</button></td>
       </tr>`).join("");
+    updateSel();
     const empty = $("#empty");
     empty.hidden = rows.length > 0;
     empty.textContent = all.length ? "Không có lời chúc nào khớp với từ bạn tìm." : "Chưa có lời chúc nào. Lời chúc mọi người gửi từ trang “Viết lời chúc” sẽ hiện ở đây.";
@@ -103,6 +104,71 @@ window.Thiep.ready.then(function () {
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "loi-chuc-gui-thay-20-11.csv"; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     toast("Đã tải file. Mở bằng Excel hoặc Google Sheets.");
+  });
+
+  /* ---------- CHẾ ĐỘ QUẢN LÝ / XOÁ ---------- */
+  const selected = new Set();
+  const table = document.querySelector(".sum-table");
+  function setAdmin(on) {
+    document.body.classList.toggle("sum-admin-on", on);
+    $("#adminLogin").hidden = on; $("#adminTools").hidden = !on;
+    if (!on) { selected.clear(); render(); }
+  }
+  function updateSel() {
+    document.querySelectorAll(".row-sel").forEach((c) => { c.checked = selected.has(c.dataset.id); });
+    $("#delSel").disabled = !selected.size;
+    $("#delSel").textContent = selected.size ? `Xoá ${selected.size} mục đã chọn` : "Xoá mục đã chọn";
+    const rows = view();
+    $("#selAll").checked = rows.length > 0 && rows.every((w) => selected.has(wishId(w)));
+  }
+  $("#manage").addEventListener("click", () => {
+    const bar = $("#adminBar"); bar.hidden = !bar.hidden;
+    if (!bar.hidden) {
+      const k = store.get(U.ADMIN_KEY, "");
+      $("#adminKey").value = k;
+      if (k) setAdmin(true); else $("#adminKey").focus();
+    } else setAdmin(false);
+  });
+  $("#adminGo").addEventListener("click", () => {
+    const k = $("#adminKey").value.trim();
+    if (!k) { toast("Bạn nhập mật khẩu trước nhé."); return; }
+    store.set(U.ADMIN_KEY, k); setAdmin(true);
+    toast("Đã vào chế độ quản lý. Mật khẩu sẽ được kiểm tra khi bạn xoá.", 3500);
+  });
+  $("#adminKey").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#adminGo").click(); });
+  $("#adminOut").addEventListener("click", () => { store.set(U.ADMIN_KEY, null); $("#adminBar").hidden = true; setAdmin(false); toast("Đã thoát chế độ quản lý trên máy này."); });
+  $("#rows").addEventListener("change", (e) => {
+    const c = e.target.closest(".row-sel"); if (!c) return;
+    if (c.checked) selected.add(c.dataset.id); else selected.delete(c.dataset.id);
+    updateSel();
+  });
+  $("#selAll").addEventListener("change", (e) => {
+    view().forEach((w) => (e.target.checked ? selected.add(wishId(w)) : selected.delete(wishId(w))));
+    updateSel();
+  });
+
+  async function removeIds(ids) {
+    const items = all.filter((w) => ids.includes(wishId(w)));
+    if (!items.length) return;
+    const own = store.get(U.WISH_KEY, []);
+    const payload = items.map((w) => ({ id: w.id || wishId(w), token: (own.find((x) => x.id === w.id) || {}).token }));
+    ids.forEach((id) => { const tr = document.querySelector(`#rows tr[data-id="${CSS.escape(id)}"]`); if (tr) tr.classList.add("removing"); });
+    toast(`Đang xoá ${items.length} lời chúc...`);
+    const res = await U.deleteWishes(payload, store.get(U.ADMIN_KEY, ""));
+    ids.forEach((id) => selected.delete(id));
+    await load();
+    if (res.ok) toast(`Đã xoá ${items.length} lời chúc.`);
+    else if (res.unknown) toast("Chưa kiểm tra được kết quả, bạn bấm “Tải lại” để xem nhé.", 4500);
+    else toast(`Chưa xoá được ${res.remaining.length} lời chúc: mật khẩu không khớp ADMIN_KEY trong Apps Script.`, 5500);
+  }
+  $("#rows").addEventListener("click", (e) => {
+    const b = e.target.closest(".row-del"); if (!b) return;
+    const w = all.find((x) => wishId(x) === b.dataset.id); if (!w) return;
+    if (confirm(`Xoá lời chúc của “${w.name || "Một học trò"}”?`)) removeIds([b.dataset.id]);
+  });
+  $("#delSel").addEventListener("click", () => {
+    if (!selected.size) return;
+    if (confirm(`Xoá ${selected.size} lời chúc đã chọn? Việc này không hoàn tác được.`)) removeIds([...selected]);
   });
 
   load();
