@@ -278,7 +278,7 @@ $ git push origin tuong-lai`,
        Thiep.adminHash("mat-khau-moi").then(console.log)
      rồi dán kết quả vào đây.                                                  */
   admin: {
-    keyHash: "",
+    keyHash: "7715d77525d0a248d37c9970dd48ce4e91a0515c4e9f6ab68a031261c4f4922c",
   },
 
   /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */
