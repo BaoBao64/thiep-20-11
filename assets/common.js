@@ -50,6 +50,27 @@
       if (d) { deepMerge(C, d); window.__thiepDraft = true; }
     }
   })();
+  /* Gửi bù lên Google Sheet những lời chúc đã viết trên máy này trước khi web được kết nối
+     (hoặc lúc mạng lỗi). Chạy mỗi khi mở trang, mỗi lời chúc chỉ gửi một lần. */
+  async function syncLocalWishes() {
+    const ep = C.wishes && C.wishes.endpoint;
+    if (!ep) return 0;
+    const KEY = "thiep2011_wishes";
+    const list = store.get(KEY, []);
+    let sent = 0;
+    for (const w of list) {
+      if (w.synced || !w.message) continue;
+      if (!w.id) w.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      try {
+        await fetch(ep, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(w) });
+        w.synced = true; sent++;
+      } catch (e) { break; }
+    }
+    if (sent) store.set(KEY, list);
+    return sent;
+  }
+  ready.then(() => setTimeout(syncLocalWishes, 1500));
+
   const localImages = {};
   const imgSrc = (p) => localImages[p] || p;
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -435,6 +456,6 @@
     $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode, typeSegments,
     STICKERS, bouquetSVG, sceneHTML, confetti, makeQR, encodeData, decodeData, THEMES, toast,
     WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", WON_ONCE_KEY: "thiep2011_won_once", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
-    EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid,
+    EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid, syncLocalWishes,
   };
 })();

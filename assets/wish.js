@@ -157,6 +157,9 @@ window.Thiep.ready.then(function () {
     const btn = $("#sendBtn"); btn.disabled = true; btn.textContent = "Đang gửi...";
     try {
       await fetch(W.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+      // đánh dấu đã gửi để không gửi lại
+      const saved = store.get(U.WISH_KEY, []); const me = saved.find((x) => x.id === payload.id);
+      if (me) { me.synced = true; store.set(U.WISH_KEY, saved); }
       toast("Đã gửi lời chúc đến Thầy! Cảm ơn bạn ♥", 3500);
       U.confetti();
     } catch (e) {

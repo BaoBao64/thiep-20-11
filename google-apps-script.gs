@@ -38,8 +38,12 @@ function doPost(e) {
       return json_({ ok: true, removed: removed });
     }
 
-    // Thêm lời chúc mới
+    // Thêm lời chúc mới (bỏ qua nếu lời chúc này đã có, tránh gửi trùng)
     if (!d.message) return json_({ ok: false });
+    if (d.id) {
+      const ids = sh.getLastRow() > 1 ? sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues() : [];
+      if (ids.some(function (r) { return String(r[0]) === String(d.id); })) return json_({ ok: true, duplicate: true });
+    }
     sh.appendRow([
       new Date(), String(d.id || Utilities.getUuid()), String(d.name || "").slice(0, 40), String(d.className || "").slice(0, 20),
       String(d.message).slice(0, 600), d.lang || "js", d.theme || "dao", d.sticker || "heart", d.view || "both", String(d.token || ""),
