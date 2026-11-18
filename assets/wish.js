@@ -1,5 +1,5 @@
 /* wish.js — trang "Thiệp sáng tạo": mọi người tự viết thiệp gửi Thầy */
-(function () {
+window.Thiep.ready.then(function () {
   "use strict";
   const C = window.CONFIG, U = window.Thiep;
   const { $, esc, fill, store, THEMES, STICKERS, toast } = U;
@@ -151,7 +151,7 @@
   /* Gửi lời chúc */
   $("#sendBtn").addEventListener("click", async () => {
     if (!validate()) return;
-    const payload = { name: state.name, className: state.className, message: state.message, lang: state.lang, theme: state.theme, sticker: state.sticker, time: new Date().toISOString() };
+    const payload = { id: U.uid(), token: U.uid() + U.uid(), name: state.name, className: state.className, message: state.message, lang: state.lang, theme: state.theme, sticker: state.sticker, view: state.view, time: new Date().toISOString() };
     const list = store.get(U.WISH_KEY, []); list.push(payload); store.set(U.WISH_KEY, list);
     if (!W.endpoint) { toast("Đã lưu lời chúc trên máy này. Hãy tạo link để gửi Thầy nhé!"); openShare(); return; }
     const btn = $("#sendBtn"); btn.disabled = true; btn.textContent = "Đang gửi...";
@@ -209,4 +209,4 @@
   }
   $("#dlBtn").addEventListener("click", () => download($("#preview"), state.name));
   $("#dlBtn2").addEventListener("click", () => { const m = /^#w=(.+)$/.exec(location.hash); const d = m && U.decodeData(m[1]); download($("#viewCard"), d && d.n); });
-})();
+});

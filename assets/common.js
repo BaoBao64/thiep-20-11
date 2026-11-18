@@ -23,8 +23,34 @@
 
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* bỏ qua */ } },
+    set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* bỏ qua */ } },
   };
+
+  /* ---------- NỘI DUNG ĐÃ CHỈNH SỬA (content.json) ----------
+     config.js = nội dung gốc; content.json = phần bạn sửa trong chế độ chỉnh sửa (?edit). */
+  const EDIT = /[?&]edit\b/.test(location.search);
+  const DRAFT_CONTENT_KEY = "thiep2011_draft_content";
+  function deepMerge(t, s) {
+    for (const k in s) {
+      const v = s[k];
+      if (v && typeof v === "object" && !Array.isArray(v) && t[k] && typeof t[k] === "object" && !Array.isArray(t[k])) deepMerge(t[k], v);
+      else t[k] = v;
+    }
+    return t;
+  }
+  const ready = (async () => {
+    try {
+      const r = await fetch("content.json?v=" + Date.now(), { cache: "no-store" });
+      if (r.ok) deepMerge(C, await r.json());
+    } catch (e) { /* chưa có content.json thì dùng config.js */ }
+    if (EDIT) {
+      const d = store.get(DRAFT_CONTENT_KEY, null);
+      if (d) { deepMerge(C, d); window.__thiepDraft = true; }
+    }
+  })();
+  const localImages = {};
+  const imgSrc = (p) => localImages[p] || p;
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
   /* ---------------- TÔ MÀU CODE ---------------- */
   const KW = new Set(("const let var function return new class def for in while if else elif try catch except " +
@@ -389,6 +415,7 @@
   window.Thiep = {
     $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode,
     STICKERS, bouquetSVG, sceneHTML, confetti, makeQR, encodeData, decodeData, THEMES, toast,
-    WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked",
+    WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
+    EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid,
   };
 })();

@@ -60,15 +60,15 @@
       <div class="cover" id="cover" role="button" tabindex="0" aria-label="Mở thiệp">
         <div class="cv-art" id="cvArt"></div>
         <div class="cv-text">
-          <div class="cv-kicker" id="cvKicker"></div>
-          <div class="cv-date" id="cvDate"></div>
-          <div class="cv-to" id="cvTo"></div>
+          <div class="cv-kicker" id="cvKicker" data-edit="cover.kicker"></div>
+          <div class="cv-date" id="cvDate" data-edit="cover.bigDate"></div>
+          <div class="cv-to" id="cvTo" data-edit="cover.to"></div>
           <div class="cv-name" id="cvName"></div>
           <div class="cv-divider"><i></i><svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 21s-7-4.6-9.3-9C1 8.3 3.3 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.7 0 6 3.8 4.3 7.5C19 16.4 12 21 12 21z" fill="#FF8FAB"/></svg><i></i></div>
-          <div class="cv-sub" id="cvSub"></div>
+          <div class="cv-sub" id="cvSub" data-edit="teacher.subject"></div>
           <button class="open-btn" id="openBtn" type="button"></button>
         </div>
-        <span class="cv-tag" id="cvTag"></span>
+        <span class="cv-tag" id="cvTag" data-edit="cover.tagline"></span>
         <span class="cv-stk s1" id="cvStk1"></span>
         <span class="cv-stk s2" id="cvStk2"></span>
       </div>
@@ -79,17 +79,17 @@
       <span class="in-stk a" id="inStk1"></span>
       <span class="in-stk b" id="inStk2"></span>
       <div class="inside-head">
-        <span class="ribbon" id="ribbon"></span>
+        <span class="ribbon" id="ribbon" data-edit="card.ribbon"></span>
         <h1 class="inside-title" id="inTitle"></h1>
-        <p class="inside-sub" id="inSub"></p>
+        <p class="inside-sub" id="inSub" data-edit="card.subtitle"></p>
       </div>
 
       <div class="inside-grid">
         <div class="letter">
           <span class="tape"></span>
-          <p class="greet" id="greet"></p>
+          <p class="greet" id="greet" data-edit="card.greeting"></p>
           <div id="letterBody"></div>
-          <p class="closing" id="closing"></p>
+          <p class="closing" id="closing" data-edit="card.closing"></p>
           <p class="sign" id="sign"></p>
         </div>
 
@@ -115,11 +115,17 @@
         </div>
       </div>
 
+      <!-- Album ảnh kỷ niệm -->
+      <section class="album" id="album" hidden>
+        <h2 class="album-title" id="albumTitle" data-edit="images.albumTitle"></h2>
+        <div class="album-grid" id="albumGrid"></div>
+      </section>
+
       <div class="qr-strip" id="qrStrip">
         <div class="qr-box" id="qrMain"></div>
         <div class="qr-text">
-          <h3 id="qrTitle"></h3>
-          <p id="qrCaption"></p>
+          <h3 id="qrTitle" data-edit="qr.title"></h3>
+          <p id="qrCaption" data-edit="qr.caption"></p>
           <a class="btn" id="qrLink" href="wish.html"></a>
           <p class="qr-note" id="qrNote" hidden></p>
         </div>
@@ -129,14 +135,26 @@
     <!-- Bức tường lời chúc -->
     <section class="wall" id="wall" hidden>
       <div class="wall-head">
-        <h2 id="wallTitle"></h2>
-        <p id="wallSub"></p>
+        <h2 id="wallTitle" data-edit="wishes.wallTitle"></h2>
+        <p id="wallSub" data-edit="wishes.wallSubtitle"></p>
       </div>
       <div class="notes" id="notes"></div>
+      <p class="wall-empty" id="wallEmpty" hidden>Chưa có lời chúc nào. Lời chúc mọi người gửi từ trang “Viết thiệp” sẽ hiện ở đây.</p>
     </section>
 
     <footer class="foot" id="foot"></footer>
   </main>
+
+  <!-- Trình phát nhạc -->
+  <div class="player" id="player" hidden>
+    <div class="pl-disc" aria-hidden="true"><span></span></div>
+    <div class="pl-video" id="ytWrap" hidden><div id="ytBox"></div></div>
+    <div class="pl-info"><b id="plTitle"></b><span id="plArtist"></span></div>
+    <button class="pl-btn" id="plToggle" type="button" aria-label="Phát nhạc">▶</button>
+  </div>
+
+  <!-- Xem ảnh lớn -->
+  <div class="lightbox" id="lightbox" hidden><img id="lightImg" alt=""><p id="lightCap"></p></div>
 
   <script src="config.js"></script>
   <script src="assets/vendor/qrcode.min.js"></script>

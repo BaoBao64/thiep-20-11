@@ -7,6 +7,7 @@
      KHÔNG dùng dấu ` và không viết ${ ... } để tránh lỗi.
    • Sửa xong chỉ cần lưu file rồi tải lại trang (F5).
    • Mở nhanh thiệp (bỏ qua màn code) khi đang chỉnh: index.html?skip=1
+   • CHỈNH SỬA NGAY TRÊN WEB: mở index.html?edit (xem README.md)
    ========================================================================== */
 
 window.CONFIG = {
@@ -226,7 +227,28 @@ $ git push origin tuong-lai`,
     hint: "Hoàn thành thử thách để mở món quà",
   },
 
-  /* ---------- NHẠC NỀN (tuỳ chọn) ----------
-     Bỏ file nhạc vào thư mục assets rồi ghi: "assets/nhac.mp3"            */
-  music: { url: "" },
+  /* ---------- NHẠC NỀN ----------
+     Cách 1 (nên dùng): dán link YouTube của bài hát vào "youtube".
+     Cách 2: tải file mp3 của bạn lên (trong chế độ chỉnh sửa) hoặc ghi đường dẫn vào "url".
+     Nhạc bắt đầu phát khi bấm nút mở thiệp.                                  */
+  music: {
+    title: "Người Gieo Mầm Xanh",
+    artist: "Hoàng Dũng · Hứa Kim Tuyền",
+    youtube: "",
+    url: "",
+    start: 0,          // bắt đầu phát từ giây thứ mấy
+  },
+
+  /* ---------- HÌNH ẢNH ----------
+     cover: ảnh thay cho bó hoa trên bìa (để trống = dùng bó hoa).
+     album: các ảnh kỷ niệm trong thiệp: [{ src: "uploads/anh.jpg", caption: "Lớp mình" }]
+     Dễ nhất là thêm ảnh trong chế độ chỉnh sửa (index.html?edit).           */
+  images: {
+    cover: "",
+    albumTitle: "Album kỷ niệm",
+    album: [],
+  },
+
+  /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */
+  github: { owner: "BaoBao64", repo: "thiep-20-11", branch: "main" },
 };

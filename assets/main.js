@@ -1,249 +1,465 @@
 /* main.js — điều khiển trang thiệp chính (index.html) */
 (function () {
   "use strict";
-  const C = window.CONFIG, U = window.Thiep;
-  const { $, esc, fill, store } = U;
-  const params = new URLSearchParams(location.search);
-  const T = C.teacher;
+  const U = window.Thiep;
+  U.ready.then(init);
 
-  document.title = fill(C.pageTitle);
-  $("#scene").innerHTML = U.sceneHTML();
+  function init() {
+    const C = window.CONFIG;
+    const { $, esc, fill, store } = U;
+    const params = new URLSearchParams(location.search);
+    const EDIT = U.EDIT;
 
-  /* ---------- GAME: trạng thái mở khoá ---------- */
-  const game = C.game || {};
-  if (params.get("gift") === "unlocked") store.set(U.UNLOCK_KEY, true);
-  const unlocked = () => !game.enabled || store.get(U.UNLOCK_KEY, false) === true;
+    $("#scene").innerHTML = U.sceneHTML();
 
-  /* ================= MÀN 1: CODE ================= */
-  const I = C.intro;
-  let typer = null, termTimers = [];
+    /* ---------- GAME: trạng thái mở khoá ---------- */
+    const game = C.game || {};
+    if (params.get("gift") === "unlocked") store.set(U.UNLOCK_KEY, true);
+    const unlocked = () => !game.enabled || store.get(U.UNLOCK_KEY, false) === true;
 
-  function startIntro() {
-    termTimers.forEach(clearTimeout); termTimers = [];
-    document.body.classList.add("intro-on");
-    const intro = $("#intro");
-    intro.hidden = false; intro.classList.remove("leave");
-    $("#edTitle").textContent = I.filename; $("#edTab").textContent = I.filename;
-    $(".intro-editor .lang-dot").dataset.lang = I.language || "js";
-    $("#termOut").innerHTML = `<span class="t-com">// đang chờ chương trình...</span>`;
-    $("#introCta").hidden = true; $("#skipBtn").hidden = false;
-    typer = U.typeCode($("#introCode"), fill(I.code), I.language || "js", {
-      speed: I.typingSpeed || 22, scroller: $("#edBody"), onDone: runTerminal,
+    /* ================= MÀN 1: CODE ================= */
+    let typer = null, termTimers = [];
+
+    function startIntro() {
+      const I = C.intro;
+      termTimers.forEach(clearTimeout); termTimers = [];
+      document.body.classList.add("intro-on");
+      const intro = $("#intro");
+      intro.hidden = false; intro.classList.remove("leave");
+      $("#edTitle").textContent = I.filename; $("#edTab").textContent = I.filename;
+      $(".intro-editor .lang-dot").dataset.lang = I.language || "js";
+      $("#termOut").innerHTML = `<span class="t-com">// đang chờ chương trình...</span>`;
+      $("#introCta").hidden = true; $("#skipBtn").hidden = false;
+      typer = U.typeCode($("#introCode"), fill(I.code), I.language || "js", {
+        speed: I.typingSpeed || 22, scroller: $("#edBody"), onDone: runTerminal,
+      });
+    }
+    $("#skipBtn").addEventListener("click", () => typer && typer.skip());
+
+    const termFmt = (s) => esc(s)
+      .replace(/^\$ /, '<span class="t-prompt">$</span> ')
+      .replace(/^(✔|✓)/, '<span class="t-ok">$1</span>')
+      .replace(/^›/, '<span class="t-dim">›</span>');
+
+    function runTerminal() {
+      $("#skipBtn").hidden = true;
+      const out = $("#termOut"); out.innerHTML = "";
+      const lines = (C.intro.terminal || []).map(fill);
+      let i = 0;
+      const later = (fn, ms) => termTimers.push(setTimeout(fn, U.reduced ? 0 : ms));
+      const next = () => {
+        if (i >= lines.length) { showCta(); return; }
+        const raw = lines[i++], div = document.createElement("div"); div.className = "tl";
+        if (raw.includes("{bar}")) {
+          const [a, b] = raw.split("{bar}");
+          div.innerHTML = `${termFmt(a)}<span class="tbar"><i></i></span><span class="tpct">0%</span>${termFmt(b)}`;
+          out.appendChild(div);
+          const bar = div.querySelector(".tbar i"), pct = div.querySelector(".tpct"), t0 = performance.now(), dur = U.reduced ? 1 : 1500;
+          (function anim(now) {
+            const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+            bar.style.width = e * 100 + "%"; pct.textContent = Math.round(e * 100) + "%";
+            if (p < 1) requestAnimationFrame(anim); else later(next, 250);
+          })(t0);
+        } else { div.innerHTML = termFmt(raw); out.appendChild(div); later(next, 450); }
+        out.parentElement.scrollTop = out.parentElement.scrollHeight;
+      };
+      later(next, 350);
+    }
+
+    function showCta() {
+      const locked = !unlocked();
+      $("#runText").textContent = locked ? game.buttonText || "choiGame()" : C.intro.buttonText || "moThiep()";
+      $("#introHint").textContent = fill(locked ? game.hint : C.intro.hint);
+      $("#introCta").hidden = false;
+      $("#runBtn").focus({ preventScroll: true });
+    }
+
+    // DỪNG Ở ĐÂY: chỉ khi bạn tự tay bấm nút mới chuyển sang thiệp
+    $("#runBtn").addEventListener("click", () => {
+      if (!unlocked()) { openGame(); return; }
+      music.play();
+      openCard();
     });
-  }
-  $("#skipBtn").addEventListener("click", () => typer && typer.skip());
 
-  const termFmt = (s) => esc(s)
-    .replace(/^\$ /, '<span class="t-prompt">$</span> ')
-    .replace(/^(✔|✓)/, '<span class="t-ok">$1</span>')
-    .replace(/^›/, '<span class="t-dim">›</span>');
-
-  function runTerminal() {
-    $("#skipBtn").hidden = true;
-    const out = $("#termOut"); out.innerHTML = "";
-    const lines = (I.terminal || []).map(fill);
-    let i = 0;
-    const later = (fn, ms) => termTimers.push(setTimeout(fn, U.reduced ? 0 : ms));
-    const next = () => {
-      if (i >= lines.length) { showCta(); return; }
-      const raw = lines[i++], div = document.createElement("div"); div.className = "tl";
-      if (raw.includes("{bar}")) {
-        const [a, b] = raw.split("{bar}");
-        div.innerHTML = `${termFmt(a)}<span class="tbar"><i></i></span><span class="tpct">0%</span>${termFmt(b)}`;
-        out.appendChild(div);
-        const bar = div.querySelector(".tbar i"), pct = div.querySelector(".tpct"), t0 = performance.now(), dur = U.reduced ? 1 : 1500;
-        (function anim(now) {
-          const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-          bar.style.width = e * 100 + "%"; pct.textContent = Math.round(e * 100) + "%";
-          if (p < 1) requestAnimationFrame(anim); else later(next, 250);
-        })(t0);
-      } else { div.innerHTML = termFmt(raw); out.appendChild(div); later(next, 450); }
-      out.parentElement.scrollTop = out.parentElement.scrollHeight;
-    };
-    later(next, 350);
-  }
-
-  function showCta() {
-    const locked = !unlocked();
-    $("#runText").textContent = locked ? game.buttonText || "choiGame()" : I.buttonText || "moThiep()";
-    $("#introHint").textContent = fill(locked ? game.hint : I.hint);
-    $("#introCta").hidden = false;
-    $("#runBtn").focus({ preventScroll: true });
-  }
-
-  // DỪNG Ở ĐÂY: chỉ khi bạn tự tay bấm nút mới chuyển sang thiệp
-  $("#runBtn").addEventListener("click", () => (unlocked() ? openCard() : openGame()));
-
-  /* ================= GAME ================= */
-  function openGame() {
-    if (game.mode === "redirect") { location.href = game.url; return; }
-    $("#gameFrame").src = game.url;
-    $("#gameLayer").hidden = false;
-  }
-  function closeGame() { $("#gameLayer").hidden = true; $("#gameFrame").src = "about:blank"; }
-  $("#gameClose").addEventListener("click", closeGame);
-  // Game gọi: parent.postMessage({ type: "GAME_WON" }, "*")
-  window.addEventListener("message", (e) => {
-    const d = e.data;
-    if (d === "GAME_WON" || (d && d.type === "GAME_WON")) {
-      store.set(U.UNLOCK_KEY, true); closeGame(); openCard();
+    /* ================= GAME ================= */
+    function openGame() {
+      if (game.mode === "redirect") { location.href = game.url; return; }
+      $("#gameFrame").src = game.url;
+      $("#gameLayer").hidden = false;
     }
-  });
-
-  /* ================= MÀN 2: THIỆP ================= */
-  function openCard() {
-    const intro = $("#intro");
-    intro.classList.add("leave");
-    setTimeout(() => { intro.hidden = true; document.body.classList.remove("intro-on"); }, U.reduced ? 0 : 750);
-    $("#cardStage").hidden = false;
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => requestAnimationFrame(() => $("#book").classList.add("show")));
-  }
-
-  // Bìa
-  const CV = C.cover;
-  $("#cvArt").innerHTML = U.bouquetSVG();
-  $("#cvKicker").textContent = fill(CV.kicker);
-  $("#cvDate").textContent = CV.bigDate;
-  $("#cvTo").textContent = fill(CV.to);
-  $("#cvName").innerHTML = `<span>${esc(T.honorific)}</span> ${esc(T.name)}`;
-  $("#cvSub").textContent = fill(T.subject);
-  $("#cvTag").textContent = fill(CV.tagline);
-  $("#openBtn").innerHTML = `${esc(fill(CV.openText))} <span aria-hidden="true">→</span>`;
-  $("#cvStk1").innerHTML = U.STICKERS.star();
-  $("#cvStk2").innerHTML = U.STICKERS.pencil();
-
-  function openBook() {
-    const book = $("#book");
-    if (book.classList.contains("opening")) return;
-    book.classList.add("opening");
-    setTimeout(() => {
-      book.hidden = true;
-      const ins = $("#inside"); ins.hidden = false; ins.classList.add("rise");
-      U.confetti();
-      setTimeout(() => $("#status").classList.add("go"), 300);
-      ins.scrollIntoView({ behavior: U.reduced ? "auto" : "smooth", block: "start" });
-    }, U.reduced ? 30 : 1150);
-  }
-  $("#cover").addEventListener("click", openBook);
-  $("#cover").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openBook(); } });
-
-  // Bên trong
-  const K = C.card;
-  $("#inStk1").innerHTML = U.STICKERS.apple();
-  $("#inStk2").innerHTML = U.STICKERS.laptop();
-  $("#ribbon").textContent = fill(K.ribbon);
-  $("#inTitle").innerHTML = esc(fill(K.title)).replace(/\[([^\]]+)\]/g, '<span class="script">$1</span>');
-  $("#inSub").textContent = fill(K.subtitle);
-  $("#greet").textContent = fill(K.greeting);
-  $("#letterBody").innerHTML = (K.letter || []).map((p) => `<p>${esc(fill(p))}</p>`).join("");
-  $("#closing").textContent = fill(K.closing);
-  $("#sign").textContent = fill(K.signature) + (C.sender.className ? ` · ${C.sender.className}` : "");
-
-  // Tab lời chúc bằng code
-  const wishes = C.codeWishes || [];
-  let cur = 0, outTimer = 0;
-  $("#wishTabs").innerHTML = wishes.map((w, i) =>
-    `<button class="ed-tab${i ? "" : " active"}" role="tab" data-i="${i}" type="button"><b class="lang-dot" data-lang="${esc(w.lang)}"></b>${esc(w.file)}</button>`).join("");
-  function showTab(i) {
-    cur = i; clearTimeout(outTimer);
-    document.querySelectorAll("#wishTabs .ed-tab").forEach((b, k) => b.classList.toggle("active", k === i));
-    U.renderCode($("#wishCode"), fill(wishes[i].code), wishes[i].lang);
-    $("#wishOut").innerHTML = `<span class="t-com">// bấm ▶ Run để xem kết quả</span>`;
-  }
-  $("#wishTabs").addEventListener("click", (e) => { const b = e.target.closest(".ed-tab"); if (b) showTab(+b.dataset.i); });
-  $("#runWish").addEventListener("click", () => {
-    const w = wishes[cur]; if (!w) return;
-    const out = $("#wishOut"), lines = fill(w.output || "").split("\n");
-    out.innerHTML = `<div class="t-dim">$ run ${esc(w.file)}</div>`;
-    let k = 0;
-    const tick = () => {
-      if (k >= lines.length) return;
-      const d = document.createElement("div"); d.className = "out-line"; d.textContent = lines[k++]; out.appendChild(d);
-      outTimer = setTimeout(tick, 380);
-    };
-    outTimer = setTimeout(tick, 300);
-  });
-  if (wishes.length) showTab(0);
-
-  // Bảng trạng thái
-  $("#statusList").innerHTML = (C.status || []).map((s) =>
-    `<div class="st"><span class="st-l">${esc(s.label)}</span><span class="st-bar"><i style="--w:${Math.min(100, +s.value || 0)}%;--c:${esc(s.color)}"></i></span><span class="st-v" style="color:${esc(s.color)}">${esc(s.text)}</span></div>`).join("");
-
-  // QR
-  const Q = C.qr || {};
-  const wishUrl = Q.url || new URL("wish.html", location.href).href;
-  $("#writeLink").href = wishUrl;
-  if (Q.enabled === false) $("#qrStrip").hidden = true;
-  else {
-    U.makeQR($("#qrMain"), wishUrl, 168);
-    $("#qrTitle").textContent = fill(Q.title);
-    $("#qrCaption").textContent = fill(Q.caption);
-    $("#qrLink").textContent = fill(Q.button);
-    $("#qrLink").href = wishUrl;
-    if (location.protocol === "file:" && !Q.url) {
-      const note = $("#qrNote"); note.hidden = false;
-      note.textContent = "Lưu ý: bạn đang mở file trên máy nên QR chỉ trỏ tới máy này. Đăng web lên mạng (GitHub Pages, Netlify...) hoặc điền qr.url trong config.js để mọi người quét được.";
-    }
-  }
-
-  // Bức tường lời chúc
-  async function loadWall() {
-    const W = C.wishes || {};
-    if (W.showWall === false) return;
-    let list = [];
-    if (W.endpoint) {
-      try {
-        const r = await fetch(W.endpoint);
-        const j = await r.json();
-        list = Array.isArray(j) ? j : j.data || j.wishes || [];
-      } catch (e) { /* không lấy được thì thôi */ }
-    }
-    const local = store.get(U.WISH_KEY, []);
-    const seen = new Set(list.map((w) => (w.name || "") + "|" + (w.message || "")));
-    local.forEach((w) => { if (!seen.has(w.name + "|" + w.message)) list.push(w); });
-    list = list.filter((w) => w && w.message);
-    if (!list.length) return;
-    $("#wallTitle").textContent = fill(W.wallTitle);
-    $("#wallSub").textContent = fill(W.wallSubtitle);
-    const keys = Object.keys(U.THEMES);
-    $("#notes").innerHTML = list.slice().reverse().map((w, i) => {
-      const th = U.THEMES[w.theme] || U.THEMES[keys[i % keys.length]];
-      const rot = ((i * 37) % 7) - 3;
-      return `<figure class="note" style="--a:${th.a};--b:${th.b};--ink:${th.ink};--rot:${rot}deg">
-        <span class="note-pin"></span>
-        <blockquote>${esc(w.message)}</blockquote>
-        <figcaption><b>${esc(w.name || "Một học trò")}</b>${w.className ? ` · ${esc(w.className)}` : ""}<span class="note-lang">${esc(w.lang || "js")}</span></figcaption>
-      </figure>`;
-    }).join("");
-    $("#wall").hidden = false;
-  }
-  loadWall();
-
-  // Chân trang
-  $("#foot").innerHTML = `<span class="t-com">// </span>${esc(fill("Made with ♥ bởi {toi} · {occasion} {ngay}"))}`;
-
-  // Nhạc nền
-  if (C.music && C.music.url) {
-    const audio = new Audio(C.music.url); audio.loop = true;
-    const btn = $("#musicBtn"); btn.hidden = false;
-    btn.addEventListener("click", () => {
-      if (audio.paused) { audio.play().catch(() => {}); btn.classList.add("on"); }
-      else { audio.pause(); btn.classList.remove("on"); }
+    function closeGame() { $("#gameLayer").hidden = true; $("#gameFrame").src = "about:blank"; }
+    $("#gameClose").addEventListener("click", closeGame);
+    // Game gọi: parent.postMessage({ type: "GAME_WON" }, "*")
+    window.addEventListener("message", (e) => {
+      const d = e.data;
+      if (d === "GAME_WON" || (d && d.type === "GAME_WON")) {
+        store.set(U.UNLOCK_KEY, true); closeGame(); music.play(); openCard();
+      }
     });
-    $("#runBtn").addEventListener("click", () => { if (unlocked()) audio.play().then(() => btn.classList.add("on")).catch(() => {}); });
+
+    /* ================= CHUYỂN CẢNH: MƯA CODE ================= */
+    function codeRain(onCovered, onReveal) {
+      return new Promise((resolve) => {
+        const cv = document.createElement("canvas"); cv.className = "code-rain"; document.body.appendChild(cv);
+        const ctx = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+        const W = innerWidth, H = innerHeight;
+        cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr);
+        const pool = [C.intro.code, ...(C.codeWishes || []).map((w) => w.code)]
+          .map(fill).join("\n").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+          .split("\n").map((s) => s.trim()).filter((s) => s.length > 3);
+        if (!pool.length) pool.push("console.log('Cảm ơn Thầy!');");
+        const colors = ["#cba6f7", "#a6e3a1", "#89b4fa", "#f9e2af", "#94e2d5", "#fab387", "#f38ba8", "#cdd6f4"];
+        const drops = [];
+        const spawn = (n) => {
+          for (let i = 0; i < n; i++) {
+            const size = 11 + Math.random() * 13;
+            let txt = pool[(Math.random() * pool.length) | 0];
+            if (txt.length > 46) txt = txt.slice(0, 46) + "…";
+            drops.push({ x: Math.random() * (W + 80) - 80, y: -size - Math.random() * H * 0.4, vy: 2 + Math.random() * 5 + size * 0.15, txt, size, c: colors[(Math.random() * colors.length) | 0], a: 0.5 + Math.random() * 0.5 });
+          }
+        };
+        const COVER = 1150, HOLD = 1550, REVEAL = 1100;
+        const t0 = performance.now(); let covered = false, revealed = false;
+        ctx.textBaseline = "top";
+        function frame(now) {
+          const t = now - t0;
+          ctx.globalCompositeOperation = "source-over";
+          ctx.clearRect(0, 0, W, H);
+          const c = Math.min(1, t / COVER), e = c * c * (3 - 2 * c);
+          ctx.fillStyle = `rgba(15,20,36,${e})`; ctx.fillRect(0, 0, W, H);
+          if (t < HOLD + REVEAL * 0.5) spawn(t < COVER ? 4 : 2);
+          for (let i = drops.length - 1; i >= 0; i--) {
+            const d = drops[i];
+            d.vy += 0.14; d.y += d.vy;
+            if (d.y > H + 30) { drops.splice(i, 1); continue; }
+            ctx.font = `500 ${d.size}px "JetBrains Mono", ui-monospace, monospace`;
+            ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillText(d.txt, d.x, d.y);
+          }
+          ctx.globalAlpha = 1;
+          if (!covered && t >= COVER) { covered = true; onCovered && onCovered(); }
+          if (t >= HOLD) {
+            if (!revealed) { revealed = true; onReveal && onReveal(); }
+            const p = Math.min(1, (t - HOLD) / REVEAL), ep = 1 - Math.pow(1 - p, 3);
+            const R = Math.hypot(W, H) * 0.55 * ep + 1;
+            const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, R);
+            g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(Math.max(0, (R - 140) / R), "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.globalCompositeOperation = "destination-out"; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+            if (p >= 1) { cv.remove(); resolve(); return; }
+          }
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    /* ================= MÀN 2: THIỆP ================= */
+    function showStage() {
+      const intro = $("#intro");
+      intro.hidden = true; intro.classList.remove("leave");
+      document.body.classList.remove("intro-on");
+      $("#cardStage").hidden = false;
+      $("#player").hidden = !music.has();
+      window.scrollTo(0, 0);
+    }
+    function openCard() {
+      if (U.reduced) { showStage(); $("#book").classList.add("show"); return; }
+      codeRain(showStage, () => $("#book").classList.add("show"));
+    }
+
+    function openBook() {
+      if (EDIT) return;
+      const book = $("#book");
+      if (book.classList.contains("opening")) return;
+      book.classList.add("opening");
+      setTimeout(() => {
+        book.hidden = true;
+        const ins = $("#inside"); ins.hidden = false; ins.classList.add("rise");
+        U.confetti();
+        setTimeout(() => $("#status").classList.add("go"), 300);
+        ins.scrollIntoView({ behavior: U.reduced ? "auto" : "smooth", block: "start" });
+      }, U.reduced ? 30 : 1150);
+    }
+    $("#cover").addEventListener("click", openBook);
+    $("#cover").addEventListener("keydown", (e) => {
+      if (e.target.isContentEditable) return;
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openBook(); }
+    });
+
+    /* ---------- VẼ NỘI DUNG (gọi lại mỗi khi chỉnh sửa) ---------- */
+    const wishes = () => C.codeWishes || [];
+    let cur = 0, outTimer = 0;
+
+    function render() {
+      const T = C.teacher, CV = C.cover, K = C.card;
+      document.title = fill(C.pageTitle);
+
+      // Bìa
+      const cvImg = C.images && C.images.cover;
+      $("#cvArt").innerHTML = cvImg
+        ? `<figure class="cv-photo"><span class="cv-tape"></span><img src="${esc(U.imgSrc(cvImg))}" alt="Ảnh bìa"></figure>`
+        : U.bouquetSVG();
+      $("#cvKicker").textContent = fill(CV.kicker);
+      $("#cvDate").textContent = CV.bigDate;
+      $("#cvTo").textContent = fill(CV.to);
+      $("#cvName").innerHTML = `<span>${esc(T.honorific)}</span> ${esc(T.name)}`;
+      $("#cvSub").textContent = fill(T.subject);
+      $("#cvTag").textContent = fill(CV.tagline);
+      $("#openBtn").innerHTML = `${esc(fill(CV.openText))} <span aria-hidden="true">→</span>`;
+      $("#cvStk1").innerHTML = U.STICKERS.star();
+      $("#cvStk2").innerHTML = U.STICKERS.pencil();
+
+      // Bên trong
+      $("#inStk1").innerHTML = U.STICKERS.apple();
+      $("#inStk2").innerHTML = U.STICKERS.laptop();
+      $("#ribbon").textContent = fill(K.ribbon);
+      $("#inTitle").innerHTML = esc(fill(K.title)).replace(/\[([^\]]+)\]/g, '<span class="script">$1</span>');
+      $("#inSub").textContent = fill(K.subtitle);
+      $("#greet").textContent = fill(K.greeting);
+      $("#letterBody").innerHTML = (K.letter || []).map((p, i) => `<p data-edit="card.letter.${i}" data-multiline>${esc(fill(p))}</p>`).join("");
+      $("#closing").textContent = fill(K.closing);
+      $("#sign").innerHTML = `<span data-edit="card.signature">${esc(fill(K.signature))}</span>${C.sender.className ? `<small> · ${esc(C.sender.className)}</small>` : ""}`;
+
+      // Tab lời chúc bằng code
+      if (cur >= wishes().length) cur = 0;
+      $("#wishTabs").innerHTML = wishes().map((w, i) =>
+        `<button class="ed-tab${i === cur ? " active" : ""}" role="tab" data-i="${i}" type="button"><b class="lang-dot" data-lang="${esc(w.lang)}"></b>${esc(w.file)}</button>`).join("");
+      if (wishes().length) showTab(cur);
+
+      // Bảng trạng thái
+      $("#statusList").innerHTML = (C.status || []).map((s) =>
+        `<div class="st"><span class="st-l">${esc(s.label)}</span><span class="st-bar"><i style="--w:${Math.min(100, +s.value || 0)}%;--c:${esc(s.color)}"></i></span><span class="st-v" style="color:${esc(s.color)}">${esc(s.text)}</span></div>`).join("");
+
+      renderAlbum();
+      renderQR();
+      $("#foot").innerHTML = `<span class="t-com">// </span>${esc(fill("Made with ♥ bởi {toi} · {occasion} {ngay}"))}`;
+      (U.afterRender || []).forEach((fn) => fn());
+    }
+
+    function showTab(i) {
+      cur = i; clearTimeout(outTimer);
+      document.querySelectorAll("#wishTabs .ed-tab").forEach((b, k) => b.classList.toggle("active", k === i));
+      U.renderCode($("#wishCode"), fill(wishes()[i].code), wishes()[i].lang);
+      $("#wishOut").innerHTML = `<span class="t-com">// bấm ▶ Run để xem kết quả</span>`;
+    }
+    $("#wishTabs").addEventListener("click", (e) => {
+      const b = e.target.closest(".ed-tab"); if (!b) return;
+      showTab(+b.dataset.i);
+      (U.onTab || []).forEach((fn) => fn(cur));
+    });
+    $("#runWish").addEventListener("click", () => {
+      const w = wishes()[cur]; if (!w) return;
+      const out = $("#wishOut"), lines = fill(w.output || "").split("\n");
+      out.innerHTML = `<div class="t-dim">$ run ${esc(w.file)}</div>`;
+      let k = 0;
+      const tick = () => {
+        if (k >= lines.length) return;
+        const d = document.createElement("div"); d.className = "out-line"; d.textContent = lines[k++]; out.appendChild(d);
+        outTimer = setTimeout(tick, 380);
+      };
+      outTimer = setTimeout(tick, 300);
+    });
+
+    /* ---------- ALBUM ẢNH ---------- */
+    function renderAlbum() {
+      const im = C.images || {}, list = im.album || [];
+      const sec = $("#album");
+      sec.hidden = !list.length && !EDIT;
+      $("#albumTitle").textContent = fill(im.albumTitle || "Album kỷ niệm");
+      $("#albumGrid").innerHTML = list.map((p, i) => {
+        const rot = ((i * 47) % 9) - 4;
+        return `<figure class="pol" style="--rot:${rot}deg">
+          <button class="pol-img" type="button" data-view="${i}"><img src="${esc(U.imgSrc(p.src))}" alt="${esc(p.caption || "Ảnh kỷ niệm")}" loading="lazy"></button>
+          <figcaption data-edit="images.album.${i}.caption">${esc(p.caption || "")}</figcaption>
+          ${EDIT ? `<button class="pol-del" type="button" data-del="${i}" title="Xoá ảnh">×</button>` : ""}
+        </figure>`;
+      }).join("") + (EDIT ? `<button class="pol-add" type="button" id="addPhoto"><b>+</b>Thêm ảnh</button>` : "");
+    }
+    $("#albumGrid").addEventListener("click", (e) => {
+      const v = e.target.closest("[data-view]"); if (!v || EDIT) return;
+      const p = C.images.album[+v.dataset.view];
+      $("#lightImg").src = U.imgSrc(p.src); $("#lightCap").textContent = p.caption || "";
+      $("#lightbox").hidden = false;
+    });
+    $("#lightbox").addEventListener("click", () => ($("#lightbox").hidden = true));
+
+    /* ---------- QR ---------- */
+    function renderQR() {
+      const Q = C.qr || {};
+      const wishUrl = Q.url || new URL("wish.html", location.href).href;
+      $("#writeLink").href = wishUrl;
+      $("#qrStrip").hidden = Q.enabled === false;
+      if (Q.enabled === false) return;
+      if ($("#qrMain").dataset.url !== wishUrl) { U.makeQR($("#qrMain"), wishUrl, 168); $("#qrMain").dataset.url = wishUrl; }
+      $("#qrTitle").textContent = fill(Q.title);
+      $("#qrCaption").textContent = fill(Q.caption);
+      $("#qrLink").textContent = fill(Q.button);
+      $("#qrLink").href = wishUrl;
+      const note = $("#qrNote");
+      note.hidden = !(location.protocol === "file:" && !Q.url);
+      note.textContent = "Lưu ý: bạn đang mở file trên máy nên QR chỉ trỏ tới máy này. Đăng web lên mạng hoặc điền qr.url trong config.js để mọi người quét được.";
+    }
+
+    /* ================= BỨC TƯỜNG LỜI CHÚC ================= */
+    const wishId = (w) => w.id || `${w.time || ""}|${w.name || ""}|${String(w.message || "").slice(0, 20)}`;
+    let wallList = [];
+
+    async function loadWall() {
+      const W = C.wishes || {};
+      if (W.showWall === false && !EDIT) { $("#wall").hidden = true; return; }
+      let list = [];
+      if (W.endpoint) {
+        try {
+          const r = await fetch(W.endpoint);
+          const j = await r.json();
+          list = Array.isArray(j) ? j : j.data || j.wishes || [];
+        } catch (e) { /* không lấy được thì thôi */ }
+      }
+      const seen = new Set(list.map(wishId));
+      store.get(U.WISH_KEY, []).forEach((w) => { if (!seen.has(wishId(w))) list.push(w); });
+      const hidden = new Set(store.get(U.HIDDEN_KEY, []));
+      wallList = list.filter((w) => w && w.message && !hidden.has(wishId(w)));
+      renderWall();
+    }
+
+    function renderWall() {
+      const W = C.wishes || {};
+      $("#wallTitle").textContent = fill(W.wallTitle);
+      $("#wallSub").textContent = fill(W.wallSubtitle);
+      const mine = new Set(store.get(U.WISH_KEY, []).map(wishId));
+      const keys = Object.keys(U.THEMES);
+      $("#notes").innerHTML = wallList.slice().reverse().map((w, i) => {
+        const th = U.THEMES[w.theme] || U.THEMES[keys[i % keys.length]];
+        const rot = ((i * 37) % 7) - 3, id = wishId(w);
+        const canDel = EDIT || mine.has(id);
+        return `<figure class="note" data-id="${esc(id)}" style="--a:${th.a};--b:${th.b};--ink:${th.ink};--rot:${rot}deg">
+          <span class="note-pin"></span>
+          ${canDel ? `<button class="note-del" type="button" data-id="${esc(id)}" title="Xoá lời chúc" aria-label="Xoá lời chúc">×</button>` : ""}
+          <blockquote>${esc(w.message)}</blockquote>
+          <figcaption><b>${esc(w.name || "Một học trò")}</b>${w.className ? ` · ${esc(w.className)}` : ""}<span class="note-lang">${esc(w.lang || "js")}</span></figcaption>
+        </figure>`;
+      }).join("");
+      $("#wallEmpty").hidden = wallList.length > 0;
+      $("#wall").hidden = !wallList.length && !EDIT;
+    }
+
+    $("#notes").addEventListener("click", async (e) => {
+      const b = e.target.closest(".note-del"); if (!b) return;
+      const id = b.dataset.id;
+      const w = wallList.find((x) => wishId(x) === id); if (!w) return;
+      const own = store.get(U.WISH_KEY, []).find((x) => wishId(x) === id);
+      if (!window.confirm(EDIT ? `Xoá lời chúc của “${w.name || "Một học trò"}” khỏi bức tường?` : "Xoá lời chúc của bạn khỏi bức tường?")) return;
+      // xoá trên máy này
+      store.set(U.WISH_KEY, store.get(U.WISH_KEY, []).filter((x) => wishId(x) !== id));
+      store.set(U.HIDDEN_KEY, [...new Set([...store.get(U.HIDDEN_KEY, []), id])]);
+      const card = b.closest(".note"); card.classList.add("removing");
+      setTimeout(() => { wallList = wallList.filter((x) => wishId(x) !== id); renderWall(); }, 350);
+      // xoá trên Google Sheet
+      const ep = C.wishes && C.wishes.endpoint;
+      const key = store.get(U.ADMIN_KEY, "");
+      if (ep && w.id && (key || (own && own.token))) {
+        try {
+          await fetch(ep, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "delete", id: w.id, key, token: own && own.token }) });
+          U.toast("Đã xoá lời chúc.");
+        } catch (err) { U.toast("Đã ẩn trên máy này, nhưng chưa xoá được trên bảng tính. Bạn thử lại sau nhé."); }
+      } else if (ep && EDIT && !key) {
+        U.toast("Đã ẩn trên máy này. Nhập mật khẩu quản trị trong bảng chỉnh sửa để xoá hẳn cho mọi người.", 4200);
+      } else U.toast("Đã xoá lời chúc.");
+    });
+
+    /* ================= NHẠC ================= */
+    const music = (function () {
+      let audio = null, yt = null, ytReadyP = null, want = false, playing = false, key = "";
+      const ytId = (u) => {
+        const m = String(u || "").match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/|live\/)([\w-]{11})/);
+        return m ? m[1] : /^[\w-]{11}$/.test(u || "") ? u : null;
+      };
+      const M = () => C.music || {};
+      const has = () => !!(M().url || ytId(M().youtube));
+      function ui(on) {
+        playing = on;
+        $("#player").classList.toggle("playing", on);
+        $("#plToggle").textContent = on ? "❚❚" : "▶";
+        $("#plToggle").setAttribute("aria-label", on ? "Tạm dừng nhạc" : "Phát nhạc");
+        $("#musicBtn").classList.toggle("on", on);
+        $("#musicBtn").textContent = on ? "♪ Đang phát" : "♪ Nhạc";
+      }
+      function loadYT() {
+        if (ytReadyP) return ytReadyP;
+        ytReadyP = new Promise((res) => {
+          if (window.YT && YT.Player) return res();
+          const prev = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = () => { prev && prev(); res(); };
+          const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+        });
+        return ytReadyP;
+      }
+      function setup() {
+        const m = M(), k = JSON.stringify([m.url, m.youtube, m.start]);
+        if (k === key) { refreshInfo(); return; }
+        key = k; stop();
+        if (audio) { audio.pause(); audio = null; }
+        if (yt) { try { yt.destroy(); } catch (e) {} yt = null; $("#ytWrap").innerHTML = '<div id="ytBox"></div>'; }
+        $("#ytWrap").hidden = true;
+        refreshInfo();
+        if (!has()) return;
+        if (m.url) {
+          audio = new Audio(U.imgSrc(m.url)); audio.loop = true; audio.preload = "auto";
+          audio.addEventListener("loadedmetadata", () => { if (m.start) audio.currentTime = +m.start; }, { once: true });
+          audio.addEventListener("play", () => ui(true)); audio.addEventListener("pause", () => ui(false));
+        } else {
+          const id = ytId(m.youtube);
+          $("#ytWrap").hidden = false;
+          loadYT().then(() => {
+            yt = new YT.Player("ytBox", {
+              width: 200, height: 113, videoId: id,
+              playerVars: { start: +m.start || 0, playsinline: 1, rel: 0, loop: 1, playlist: id },
+              events: {
+                onReady: () => { if (want) yt.playVideo(); },
+                onStateChange: (e) => ui(e.data === 1),
+              },
+            });
+          });
+        }
+      }
+      function refreshInfo() {
+        $("#plTitle").textContent = M().title || "Nhạc nền";
+        $("#plArtist").textContent = M().artist || "";
+        $("#musicBtn").hidden = !has();
+        if (!$("#cardStage").hidden) $("#player").hidden = !has();
+      }
+      function play() {
+        if (!has()) return;
+        want = true;
+        if (audio) audio.play().catch(() => {});
+        else if (yt && yt.playVideo) yt.playVideo();
+      }
+      function stop() { want = false; if (audio) audio.pause(); if (yt && yt.pauseVideo) yt.pauseVideo(); }
+      const toggle = () => (playing ? stop() : play());
+      $("#plToggle").addEventListener("click", toggle);
+      $("#musicBtn").addEventListener("click", toggle);
+      return { setup, play, stop, has };
+    })();
+
+    $("#replayBtn").addEventListener("click", () => { music.stop(); startIntro(); });
+
+    // Cho game, trang khác hoặc chế độ chỉnh sửa gọi
+    Object.assign(U, { openCard, openBook, render, renderWall, loadWall, reloadMusic: () => music.setup() });
+
+    /* ---------- KHỞI ĐỘNG ---------- */
+    render();
+    loadWall();
+    music.setup();
+
+    if (EDIT) {
+      $("#intro").hidden = true; document.body.classList.remove("intro-on");
+      $("#cardStage").hidden = false;
+      $("#book").classList.add("show");
+      $("#inside").hidden = false; $("#status").classList.add("go");
+      $("#player").hidden = !music.has();
+      const s = document.createElement("script"); s.src = "assets/editor.js?v=" + Date.now(); document.body.appendChild(s);
+    } else if (params.has("skip") || C.intro.enabled === false) {
+      showStage();
+      requestAnimationFrame(() => $("#book").classList.add("show"));
+    } else startIntro();
   }
-
-  $("#replayBtn").addEventListener("click", startIntro);
-
-  // Cho game hoặc trang khác gọi trực tiếp nếu cần
-  window.Thiep.openCard = openCard;
-  window.Thiep.openBook = openBook;
-
-  /* ---------- KHỞI ĐỘNG ---------- */
-  if (params.has("skip") || I.enabled === false) {
-    $("#intro").hidden = true; document.body.classList.remove("intro-on");
-    $("#cardStage").hidden = false;
-    requestAnimationFrame(() => $("#book").classList.add("show"));
-  } else startIntro();
 })();
