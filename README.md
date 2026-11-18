@@ -8,7 +8,7 @@ Web thiệp tri ân Thầy dạy Tin học, viết theo phong cách lập trình
 |---|---|
 | `index.html` | **Thiệp chính**: màn code tự gõ → bấm nút → bìa thiệp → mở thiệp (thư tay + lời chúc bằng code + QR) |
 | `wish.html` | **Thiệp sáng tạo**: mọi người tự viết thiệp gửi Thầy, chọn ngôn ngữ / màu / sticker, tạo link + QR, tải ảnh |
-| `game/index.html` | Trang **giữ chỗ cho game**. Thay bằng game của bạn sau |
+| `game/` | Game **SCP ICT**: bay qua những cột mã lệnh, thắng 10 điểm thì thiệp (phần quà) mở ra |
 | `config.js` | **Toàn bộ chữ, lời chúc, đoạn code, QR, game... đều sửa ở đây** |
 | `content.json` | Nội dung bạn sửa ngay trên web (`?edit`), đè lên `config.js` |
 | `google-apps-script.gs` | Code để nhận lời chúc vào Google Sheet |
@@ -71,9 +71,18 @@ Muốn lời chúc của mọi người tự đổ về một chỗ và hiện l
 - **Người viết:** trên chính máy đã gửi, họ thấy nút × trên lời chúc của mình và tự xoá được.
 - Bạn cũng có thể xoá thẳng dòng đó trong Google Sheet.
 
-## Gắn game (làm sau)
+## Game SCP ICT
 
-Trong `config.js`:
+Game nằm trong thư mục `game/` (`index.html`, `style.css`, `main.js`, `img/`) và **đang được bật**.
+Sau màn code, người xem phải chơi game và đạt **10 điểm** thì thiệp mới mở.
+
+- Chơi riêng game: https://baobao64.github.io/thiep-20-11/game/
+- Đổi mốc điểm: sửa `WIN_SCORE` ở đầu `game/main.js`.
+- Game dễ hơn: tăng `gap` (khe giữa 2 cột) hoặc giảm `dx` (tốc độ) trong object `pipes` ở `game/main.js`.
+- Tắt game (mở thiệp ngay, không cần chơi): trong `config.js` đổi `enabled: true` thành `enabled: false`.
+- Khi game chạy trong thiệp, game không tự phát nhạc vì thiệp đã phát rồi. Mở game như trang riêng thì game tự phát bài *Người Gieo Mầm Xanh* từ YouTube.
+
+Cấu hình trong `config.js`:
 
 ```js
 game: { enabled: true, url: "game/index.html", mode: "embed" }
@@ -83,7 +92,7 @@ game: { enabled: true, url: "game/index.html", mode: "embed" }
 - `mode: "embed"`: game chạy ngay trong trang thiệp. Thắng là thiệp hiện ra luôn.
 - `mode: "redirect"`: chuyển sang trang game. Thắng thì quay về `index.html?gift=unlocked`.
 
-Khi người chơi thắng, game chỉ cần gọi hàm `moQua()`. Mẫu hàm có sẵn trong `game/index.html`.
+Khi người chơi thắng, game gọi hàm `moQua()` (trong `game/main.js`).
 
 Muốn chơi lại từ đầu (khoá quà lại), mở Console của trình duyệt và chạy `localStorage.removeItem("thiep2011_unlocked")`.
 

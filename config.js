@@ -220,11 +220,11 @@ $ git push origin tuong-lai`,
                          index.html?gift=unlocked
      Xem game/index.html để biết game cần gọi gì khi người chơi thắng.     */
   game: {
-    enabled: false,
+    enabled: true,
     url: "game/index.html",
     mode: "embed",
     buttonText: "choiGame()",
-    hint: "Hoàn thành thử thách để mở món quà",
+    hint: "Thắng 10 điểm game SCP ICT để mở món quà",
   },
 
   /* ---------- NHẠC NỀN ----------

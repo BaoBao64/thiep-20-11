@@ -1,0 +1,94 @@
+* {
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 0%, #1b2433 0%, #0b0f16 70%);
+    color: #e6edf3;
+    font-family: 'Baloo 2', system-ui, sans-serif;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px 16px;
+    gap: 10px;
+}
+
+/* ===== Tiêu đề ===== */
+.game-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.game-title h1 {
+    margin: 0;
+    font-weight: 800;
+    font-size: 2.4em;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: #ffb347;
+    text-shadow: 0 3px 0 #7a3d12;
+}
+.game-title h1 span {
+    color: #3fb950;
+    text-shadow: 0 3px 0 #1a4d24;
+}
+.subtitle {
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffd27a;
+}
+/* khung YouTube phát nhạc nền: ẩn khỏi màn hình */
+.yt {
+    position: fixed;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.mute {
+    border: 1px solid #30363d;
+    background: #161b22;
+    color: inherit;
+    border-radius: 8px;
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+}
+
+/* ===== Màn hình game =====
+   Canvas luôn giữ tỉ lệ 9:16 và co lại vừa màn hình điện thoại */
+.game-screen {
+    width: min(360px, 100%, calc((100vh - 160px) * 9 / 16));
+    aspect-ratio: 9 / 16;
+}
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .5), 0 0 0 1px #30363d;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+.game-description {
+    margin: 0;
+    color: #8b949e;
+    text-align: center;
+    font-size: 15px;
+}
+kbd {
+    font-family: 'JetBrains Mono', monospace;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: #e6edf3;
+}

@@ -1,56 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game · Mở quà 20/11</title>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    :root { --bg: #0f1424; --card: #1e1e2e; --fg: #cdd6f4; --dim: #7f849c; --green: #a6e3a1; --pink: #ff8fab; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: var(--bg); color: var(--fg); font-family: "Be Vietnam Pro", system-ui, sans-serif; }
-    .box { width: min(560px, 100%); background: var(--card); border-radius: 20px; padding: 28px; text-align: center; box-shadow: 0 30px 70px -24px rgba(0,0,0,.6); }
-    h1 { margin: 0 0 8px; font-size: 26px; }
-    p { color: var(--dim); line-height: 1.6; }
-    code { font-family: "JetBrains Mono", monospace; color: var(--green); background: #11111b; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
-    pre { text-align: left; background: #11111b; padding: 14px; border-radius: 12px; overflow: auto; font: 12.5px/1.6 "JetBrains Mono", monospace; color: var(--fg); }
-    button { margin-top: 10px; border: 0; cursor: pointer; padding: 14px 26px; border-radius: 999px; font: 700 16px "JetBrains Mono", monospace; color: #11111b; background: linear-gradient(135deg, #a6e3a1, #94e2d5); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP ICT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!--
-    ĐÂY LÀ TRANG GIỮ CHỖ CHO GAME.
-    Khi làm game xong, bạn thay toàn bộ file này bằng game của bạn
-    (hoặc đổi CONFIG.game.url trong config.js trỏ tới game).
-
-    Điều duy nhất game cần làm: khi người chơi THẮNG, gọi hàm moQua() bên dưới.
-  -->
-  <div class="box">
-    <h1>🎮 Khu vực game</h1>
-    <p>Game đang được xây dựng. Khi người chơi thắng, game chỉ cần gọi <code>moQua()</code> là tấm thiệp (phần quà) sẽ mở ra.</p>
-    <pre>// Dán hàm này vào game của bạn
-function moQua() {
-  try { localStorage.setItem("thiep2011_unlocked", "true"); } catch (e) {}
-  if (window.parent !== window) {
-    // game đang chạy bên trong trang thiệp (mode: "embed")
-    window.parent.postMessage({ type: "GAME_WON" }, "*");
-  } else {
-    // game là trang riêng (mode: "redirect")
-    location.href = "../index.html?gift=unlocked";
-  }
-}</pre>
-    <button type="button" onclick="moQua()">▶ Giả lập: thắng game</button>
-  </div>
-
-  <script>
-    function moQua() {
-      try { localStorage.setItem("thiep2011_unlocked", "true"); } catch (e) {}
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: "GAME_WON" }, "*");
-      } else {
-        location.href = "../index.html?gift=unlocked";
-      }
-    }
-  </script>
+    <div class="container">
+        <header class="game-title">
+            <div class="title-text">
+                <h1>SCP <span>ICT</span></h1>
+                <p class="subtitle">Thắng 10 điểm mới có quà 🎁</p>
+            </div>
+            <button id="mute" class="mute" aria-label="Bật/tắt nhạc và âm thanh">🔊</button>
+        </header>
+        <div class="game-screen">
+            <canvas id="game"></canvas>
+        </div>
+        <div id="yt" class="yt" aria-hidden="true"></div>
+        <p id="description" class="game-description">Nhấn <kbd>Space</kbd> hoặc chạm vào màn hình để bay</p>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
