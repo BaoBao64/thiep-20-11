@@ -246,7 +246,10 @@ $ git push origin tuong-lai`,
   images: {
     cover: "",
     albumTitle: "Album kỷ niệm",
-    album: [],
+    album: [
+      { src: "uploads/album-lop-chup-chung.jpg", caption: "Cả lớp cùng Thầy" },
+      { src: "uploads/album-hoat-dong-ngoai-troi.jpg", caption: "Những ngày hoạt động ngoài trời" },
+    ],
   },
 
   /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */

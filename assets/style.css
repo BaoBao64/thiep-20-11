@@ -406,11 +406,11 @@ textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
 /* Album kỷ niệm */
 .album { margin-top: 34px; }
 .album-title { text-align: center; font: 700 clamp(24px, 3.2vw, 32px) var(--f-script); color: var(--rose); margin: 0 0 18px; }
-.album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 220px)); justify-content: center; gap: 26px 22px; }
+.album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 460px)); justify-content: center; align-items: start; gap: 30px 26px; }
 .pol { position: relative; margin: 0; background: #fff; padding: 10px 10px 12px; border-radius: 6px; transform: rotate(var(--rot)); box-shadow: 0 14px 26px -14px rgba(29, 53, 87, .5); transition: transform .2s; }
 .pol:hover { transform: rotate(0) translateY(-4px); }
 .pol-img { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-.pol-img img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; }
+.pol-img img { display: block; width: 100%; height: auto; max-height: 420px; object-fit: cover; border-radius: 3px; background: #f3f6fb; }
 .pol figcaption { font: 20px/1.3 var(--f-hand); color: var(--ink); text-align: center; margin-top: 8px; min-height: 1.3em; overflow-wrap: anywhere; }
 .pol-del, .note-del {
   position: absolute; top: -10px; right: -10px; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; cursor: pointer;
