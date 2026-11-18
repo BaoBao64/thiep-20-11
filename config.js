@@ -144,7 +144,7 @@ console.log("Chúc mừng ngày 20/11, thưa Thầy!");`,
   <p>Thầy là &lt;header&gt; dẫn lối cho mọi bài học,</p>
   <p>là &lt;main&gt; chứa những điều quý giá nhất,</p>
   <p>và là &lt;footer&gt; vững chãi phía sau chúng em.</p>
-  <footer>Made with &lt;3 by học trò của Thầy</footer>
+  <footer>Made with &lt;3 by tập thể 10A7</footer>
 </section>`,
       output: "Trình duyệt hiển thị: Cảm ơn {danh_xung} {thay} ♥",
     },
@@ -250,6 +250,11 @@ $ git push origin tuong-lai`,
       { src: "uploads/album-lop-chup-chung.jpg", caption: "Thầy Phú và đàn con" },
       { src: "uploads/album-hoat-dong-ngoai-troi.jpg", caption: "Flashmob" },
       { src: "uploads/album-sinh-nhat-thay.jpg", caption: "Sinh nhật Thầy" },
+      { src: "uploads/album-hoat-dong-dau-tien.jpg", caption: "Hoạt động đầu tiên" },
+      { src: "uploads/album-chua-thay-loi-hoi-dap.jpg", caption: "Chưa thấy lời hồi đáp" },
+      { src: "uploads/album-len-xe.jpg", caption: "Lên xe" },
+      { src: "uploads/album-hop-ph.jpg", caption: "Họp PH" },
+      { src: "uploads/album-ba-khi.jpg", caption: "Bá khí" },
     ],
   },
 

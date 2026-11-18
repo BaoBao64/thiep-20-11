@@ -408,6 +408,9 @@ textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
 .album-title { text-align: center; font: 700 clamp(24px, 3.2vw, 32px) var(--f-script); color: var(--rose); margin: 0 0 18px; }
 .album-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 30px 26px; }
 .album-grid > * { flex: 0 1 440px; min-width: 0; }
+.album-grid > .pol.portrait { flex-basis: 212px; }
+.pol.portrait .pol-img img { max-height: 420px; }
+@media (max-width: 680px) { .album-grid { gap: 22px 14px; } .album-grid > .pol.portrait { flex-basis: calc(50% - 7px); } .pol.portrait figcaption { font-size: 17px; } }
 .pol { position: relative; margin: 0; background: #fff; padding: 10px 10px 12px; border-radius: 6px; transform: rotate(var(--rot)); box-shadow: 0 14px 26px -14px rgba(29, 53, 87, .5); transition: transform .2s; }
 .pol:hover { transform: rotate(0) translateY(-4px); }
 .pol-img { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }

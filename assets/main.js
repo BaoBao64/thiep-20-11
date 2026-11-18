@@ -290,7 +290,7 @@
       $("#albumGrid").innerHTML = list.map((p, i) => {
         const rot = ((i * 47) % 9) - 4;
         return `<figure class="pol" style="--rot:${rot}deg">
-          <button class="pol-img" type="button" data-view="${i}"><img src="${esc(U.imgSrc(p.src))}" alt="${esc(p.caption || "Ảnh kỷ niệm")}" loading="lazy"></button>
+          <button class="pol-img" type="button" data-view="${i}"><img src="${esc(U.imgSrc(p.src))}" alt="${esc(p.caption || "Ảnh kỷ niệm")}" loading="lazy" onload="this.closest('.pol').classList.toggle('portrait', this.naturalHeight > this.naturalWidth)"></button>
           <figcaption data-edit="images.album.${i}.caption">${esc(p.caption || "")}</figcaption>
           ${EDIT ? `<button class="pol-del" type="button" data-del="${i}" title="Xoá ảnh">×</button>` : ""}
         </figure>`;
