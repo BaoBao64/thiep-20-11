@@ -295,7 +295,7 @@
         const rot = ((i * 47) % 9) - 4, ph = photosOf(p), alt = esc(p.caption || "Ảnh kỷ niệm");
         const multi = ph.length > 1;
         const body = multi
-          ? `<span class="pol-slides">${ph.map((s, k) => `<img class="${k ? "" : "on"}" src="${esc(U.imgSrc(s))}" alt="${alt} ${k + 1}"${k ? ' loading="lazy"' : ` onload="${FIT}"`}>`).join("")}</span><span class="pol-count">${ph.length} ảnh</span>`
+          ? `<span class="pol-slides">${ph.map((s, k) => `<span class="sl${k ? "" : " on"}"><img class="sl-bg" src="${esc(U.imgSrc(s))}" alt="" aria-hidden="true"${k ? ' loading="lazy"' : ""}><img class="sl-fg" src="${esc(U.imgSrc(s))}" alt="${alt} ${k + 1}"${k ? ' loading="lazy"' : ` onload="${FIT}"`}></span>`).join("")}</span><span class="pol-count">${ph.length} ảnh</span>`
           : `<img src="${esc(U.imgSrc(ph[0] || ""))}" alt="${alt}" loading="lazy" onload="${FIT}">`;
         return `<figure class="pol${multi ? " multi" : ""}" style="--rot:${rot}deg" data-i="${i}">
           <button class="pol-img" type="button" data-view="${i}">${body}</button>
@@ -307,7 +307,7 @@
     }
     // Chuyển ảnh trong các khung nhiều ảnh
     function showSlide(fig, k) {
-      const imgs = fig.querySelectorAll(".pol-slides img"), dots = fig.querySelectorAll(".pol-dots i");
+      const imgs = fig.querySelectorAll(".pol-slides .sl"), dots = fig.querySelectorAll(".pol-dots i");
       if (!imgs.length) return;
       k = (k + imgs.length) % imgs.length; fig.dataset.k = k;
       imgs.forEach((im, j) => im.classList.toggle("on", j === k));
