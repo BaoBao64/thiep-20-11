@@ -582,3 +582,38 @@ textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
 }
 .wall-link { display: inline-block; margin-top: 10px; font: 700 14px var(--f-body); color: var(--rose); }
 .foot a { color: var(--rose); font-weight: 700; }
+
+/* ---------- CHẾ ĐỘ ADMIN ---------- */
+.adm-bar {
+  position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 140;
+  display: flex; align-items: center; gap: 6px; max-width: calc(100vw - 24px); padding: 6px;
+  background: rgba(20, 30, 52, .92); color: #fff; border-radius: 999px; box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .6); backdrop-filter: blur(6px);
+  font: 600 13px var(--f-body);
+}
+.adm-badge { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; border: 0; cursor: pointer; padding: 7px 12px; border-radius: 999px; background: linear-gradient(135deg, #fff1c1, var(--gold)); color: var(--navy); font: 800 13px var(--f-body); }
+.adm-acts { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.adm-acts::-webkit-scrollbar { display: none; }
+.adm-acts button { flex: 0 0 auto; border: 0; cursor: pointer; padding: 7px 12px; border-radius: 999px; background: rgba(255, 255, 255, .1); color: #fff; font: 600 13px var(--f-body); white-space: nowrap; }
+.adm-acts button:hover { background: rgba(255, 255, 255, .22); }
+.adm-acts button.out { color: #ffb3c6; }
+.adm-bar.mini { padding: 4px; }
+.adm-bar.mini .adm-acts, .adm-bar.mini .adm-badge span { display: none; }
+.is-admin .topbar { margin-top: 48px; }
+.page-wish.is-admin .wish-top, .page-sum.is-admin .wish-top { margin-top: 48px; }
+.adm-lock {
+  position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 95;
+  width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: rgba(29, 53, 87, .35); color: #fff; opacity: .55; transition: opacity .2s, background .2s;
+}
+.adm-lock:hover, .adm-lock:focus-visible { opacity: 1; background: var(--navy); }
+.adm-modal { z-index: 150; }
+.adm-modal input { width: 100%; font: 16px var(--f-body); padding: 12px 14px; border: 2px solid #e3eaf3; border-radius: 12px; outline: none; margin-bottom: 4px; }
+.adm-modal input:focus { border-color: var(--pink); }
+.adm-err { min-height: 1.2em; color: var(--rose) !important; font-weight: 600; margin: 4px 0 10px !important; }
+@media (max-width: 680px) {
+  .adm-bar { width: calc(100vw - 20px); flex-wrap: wrap; justify-content: center; border-radius: 20px; }
+  .adm-bar.mini { width: auto; }
+  .adm-acts { flex-wrap: wrap; justify-content: center; overflow: visible; }
+  .adm-acts button { padding: 7px 10px; font-size: 12.5px; }
+  .is-admin .topbar, .page-wish.is-admin .wish-top, .page-sum.is-admin .wish-top { margin-top: 128px; }
+}

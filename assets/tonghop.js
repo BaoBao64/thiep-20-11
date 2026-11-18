@@ -129,14 +129,21 @@ window.Thiep.ready.then(function () {
       if (k) setAdmin(true); else $("#adminKey").focus();
     } else setAdmin(false);
   });
-  $("#adminGo").addEventListener("click", () => {
+  $("#adminGo").addEventListener("click", async () => {
     const k = $("#adminKey").value.trim();
     if (!k) { toast("Bạn nhập mật khẩu trước nhé."); return; }
-    store.set(U.ADMIN_KEY, k); setAdmin(true);
+    const ok = U.adminLogin ? await U.adminLogin(k) : null;
+    if (ok === false) { toast("Sai mật khẩu admin."); $("#adminKey").select(); return; }
+    if (ok === null) store.set(U.ADMIN_KEY, k);   // web chưa cài mật khẩu admin: kiểm tra khi xoá
+    if (ok === true) { toast("Đã đăng nhập admin."); setTimeout(() => location.reload(), 500); return; }
+    setAdmin(true);
     toast("Đã vào chế độ quản lý. Mật khẩu sẽ được kiểm tra khi bạn xoá.", 3500);
   });
   $("#adminKey").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#adminGo").click(); });
-  $("#adminOut").addEventListener("click", () => { store.set(U.ADMIN_KEY, null); $("#adminBar").hidden = true; setAdmin(false); toast("Đã thoát chế độ quản lý trên máy này."); });
+  $("#adminOut").addEventListener("click", () => {
+    if (U.isAdmin && U.isAdmin()) { U.adminLogout(); return; }
+    store.set(U.ADMIN_KEY, null); $("#adminBar").hidden = true; setAdmin(false); toast("Đã thoát chế độ quản lý trên máy này.");
+  });
   $("#rows").addEventListener("change", (e) => {
     const c = e.target.closest(".row-sel"); if (!c) return;
     if (c.checked) selected.add(c.dataset.id); else selected.delete(c.dataset.id);
@@ -170,6 +177,9 @@ window.Thiep.ready.then(function () {
     if (!selected.size) return;
     if (confirm(`Xoá ${selected.size} lời chúc đã chọn? Việc này không hoàn tác được.`)) removeIds([...selected]);
   });
+
+  // Admin đã đăng nhập: bật sẵn chế độ quản lý
+  if (U.isAdmin && U.isAdmin()) { $("#adminBar").hidden = false; setAdmin(true); $("#adminOut").textContent = "Đăng xuất admin"; }
 
   load();
 });

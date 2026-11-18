@@ -24,7 +24,7 @@
       localStorage.removeItem(U.UNLOCK_KEY);   // xoá kiểu mở khoá vĩnh viễn của bản cũ
     } catch (e) {}
     const justWon = won;
-    const unlocked = () => !game.enabled || won;
+    const unlocked = () => !game.enabled || won || (U.isAdmin && U.isAdmin());   // admin không cần thắng game
 
     /* ================= MÀN 1: CODE ================= */
     let typer = null, termTimers = [];
@@ -594,7 +594,18 @@
     $("#replayBtn").addEventListener("click", () => startIntro());
 
     // Cho game, trang khác hoặc chế độ chỉnh sửa gọi
-    Object.assign(U, { openCard, openBook, render, renderWall, loadWall, reloadMusic: () => music.setup() });
+    // Admin: bỏ qua màn code và game, mở thiệp ngay
+    function adminSkip() {
+      if (typer && !typer.done) typer.skip();
+      termRun++; termTimers.forEach(clearTimeout);
+      if (!$("#gameLayer").hidden) closeGame();
+      music.play();
+      if (!$("#intro").hidden || $("#cardStage").hidden) openCard();
+      else if (!$("#book").hidden) openBook();
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    Object.assign(U, { openCard, openBook, adminSkip, render, renderWall, loadWall, reloadMusic: () => music.setup() });
 
     /* ---------- KHỞI ĐỘNG ---------- */
     render();
@@ -607,7 +618,7 @@
       $("#book").classList.add("show");
       $("#inside").hidden = false; $("#status").classList.add("go");
       const s = document.createElement("script"); s.src = "assets/editor.js?v=" + Date.now(); document.body.appendChild(s);
-    } else if (justWon || (!game.enabled && (params.has("skip") || C.intro.enabled === false))) {
+    } else if (justWon || ((!game.enabled || (U.isAdmin && U.isAdmin())) && (params.has("skip") || C.intro.enabled === false))) {
       // ?skip=1 chỉ có tác dụng khi game đang tắt
       showStage();
       requestAnimationFrame(() => $("#book").classList.add("show"));

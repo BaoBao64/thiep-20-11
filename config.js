@@ -272,6 +272,15 @@ $ git push origin tuong-lai`,
     note: "Sản phẩm được tạo bởi tình yêu thương cũng như góp sức của tất cả mọi thành viên 10A7",
   },
 
+  /* ---------- ADMIN ----------
+     keyHash: mã hoá một chiều của mật khẩu admin (giống ADMIN_KEY trong Apps Script).
+     Đổi mật khẩu: mở trang bất kỳ, bấm F12 → Console, gõ
+       Thiep.adminHash("mat-khau-moi").then(console.log)
+     rồi dán kết quả vào đây.                                                  */
+  admin: {
+    keyHash: "",
+  },
+
   /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */
   github: { owner: "BaoBao64", repo: "thiep-20-11", branch: "main" },
 
