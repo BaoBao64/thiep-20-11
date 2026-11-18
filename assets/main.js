@@ -394,6 +394,22 @@
       const M = () => C.music || {};
       const has = () => !!(M().url || ytId(M().youtube));
       const isPlaying = () => (audio ? !audio.paused : yt && yt.getPlayerState ? yt.getPlayerState() === 1 : false);
+      // đang phát CÓ TIẾNG thật sự
+      const audible = () => (audio ? !audio.paused && !audio.muted : !!(yt && yt.getPlayerState && yt.getPlayerState() === 1 && !yt.isMuted()));
+      const dock = $("#ytDock");
+      let askTimer = 0;
+      // Điện thoại chặn tiếng -> hiện khung video nhỏ để người xem chạm trực tiếp vào video
+      function ask() {
+        if (!yt || !want || errored || audible()) return;
+        try { yt.pauseVideo(); yt.unMute(); } catch (e) {}
+        muted = true; ui();
+        dock.classList.add("ask");
+      }
+      function verify(ms = 1000) {
+        clearTimeout(askTimer);
+        askTimer = setTimeout(() => { if (want && yt && !audible()) ask(); }, ms);
+      }
+      $("#ytAskClose").addEventListener("click", (e) => { e.stopPropagation(); dock.classList.remove("ask"); stop(); });
       function ui() {
         const on = want && !muted && !errored;
         btn.classList.toggle("on", on);
@@ -457,10 +473,14 @@
           loadYT().then(() => {
             yt = new YT.Player("ytBox", {
               width: 200, height: 113, videoId: id,
-              playerVars: { start: +m.start || 0, playsinline: 1, rel: 0, loop: 1, playlist: id, controls: 0 },
+              playerVars: { start: +m.start || 0, playsinline: 1, rel: 0, loop: 1, playlist: id, controls: 1 },
               events: {
                 onReady: start,
-                onError: () => { errored = true; ui(); },
+                onError: () => { errored = true; dock.classList.remove("ask"); ui(); },
+                onStateChange: (e) => {
+                  // người xem chạm vào video và nhạc đã có tiếng -> thu khung lại
+                  if (e.data === 1 && !yt.isMuted()) { want = true; muted = false; dock.classList.remove("ask"); clearTimeout(askTimer); ui(); }
+                },
               },
             });
           });
@@ -474,26 +494,27 @@
           const a = audio;
           a.muted = false;
           a.play().then(() => { muted = false; ui(); }).catch(() => { if (a !== audio || a.error) return; a.muted = true; muted = true; a.play().catch(() => {}); ui(); });
-        } else if (yt && yt.playVideo) { yt.unMute(); yt.playVideo(); }
+        } else if (yt && yt.playVideo) { yt.unMute(); yt.playVideo(); verify(); }
         ui();
       }
       function stop() {
-        want = false;
+        want = false; clearTimeout(askTimer); dock.classList.remove("ask");
         if (audio) audio.pause();
         if (yt && yt.pauseVideo) yt.pauseVideo();
         ui();
       }
       btn.addEventListener("click", () => {
         if (errored) { window.open("https://youtu.be/" + ytId(M().youtube), "_blank", "noopener"); return; }
-        if (want && !muted) stop(); else play();
+        if (want && audible()) stop(); else play();
       });
       // Lần chạm / bấm đầu tiên ở bất kỳ đâu: bật tiếng nếu đang phát tắt tiếng
       const unlock = (e) => {
         if (e.target.closest && e.target.closest("#soundBtn")) return;
-        if (want && (muted || !isPlaying())) play();
+        if (e.target.closest && e.target.closest("#ytDock")) return;
+        if (want && !audible()) play();
         // giữ lại cho tới khi nhạc thật sự phát có tiếng
         setTimeout(() => {
-          if (want && !muted && isPlaying()) UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true));
+          if (want && audible()) UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true));
         }, 800);
       };
       // iPhone chỉ cho bật tiếng trong click / touchend / keydown (không phải pointerdown)

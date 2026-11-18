@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=20261118e">
+  <link rel="stylesheet" href="assets/style.css?v=20261118f">
 </head>
 <body class="page-main intro-on">
 
@@ -145,7 +145,10 @@
   </main>
 
   <!-- Nhạc nền: trình phát được ẩn, chỉ còn nút loa nhỏ -->
-  <div class="yt-hidden" aria-hidden="true"><div id="ytWrap"><div id="ytBox"></div></div></div>
+  <div class="yt-dock" id="ytDock">
+    <div class="yt-ask-head"><span>♪ Chạm video để nghe nhạc</span><button type="button" id="ytAskClose" aria-label="Đóng">×</button></div>
+    <div id="ytWrap"><div id="ytBox"></div></div>
+  </div>
   <button class="sound-btn" id="soundBtn" type="button" hidden aria-label="Tắt nhạc">
     <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><g class="sb-on" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M16 9.5a3.5 3.5 0 0 1 0 5"/><path d="M18.5 7a7 7 0 0 1 0 10"/></g><g class="sb-off" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></g></svg>
   </button>
@@ -153,9 +156,9 @@
   <!-- Xem ảnh lớn -->
   <div class="lightbox" id="lightbox" hidden><img id="lightImg" alt=""><p id="lightCap"></p></div>
 
-  <script src="config.js?v=20261118e"></script>
-  <script src="assets/vendor/qrcode.min.js?v=20261118e"></script>
-  <script src="assets/common.js?v=20261118e"></script>
-  <script src="assets/main.js?v=20261118e"></script>
+  <script src="config.js?v=20261118f"></script>
+  <script src="assets/vendor/qrcode.min.js?v=20261118f"></script>
+  <script src="assets/common.js?v=20261118f"></script>
+  <script src="assets/main.js?v=20261118f"></script>
 </body>
 </html>
