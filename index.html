@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thiệp 20/11 · Kính tặng Thầy</title>
+  <meta name="description" content="Tấm thiệp bằng code tri ân Thầy nhân Ngày Nhà giáo Việt Nam 20/11.">
+  <meta name="theme-color" content="#1d3557">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page-main intro-on">
+
+  <!-- Khung cảnh trường học (vẽ bằng SVG trong assets/common.js) -->
+  <div id="scene" class="scene" aria-hidden="true"></div>
+
+  <!-- ================= MÀN 1: NHỮNG DÒNG CODE ================= -->
+  <section id="intro" class="intro" aria-label="Màn mở đầu">
+    <div class="editor intro-editor">
+      <div class="ed-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="ed-title" id="edTitle">tri_an_thay.js</span>
+        <button class="ed-skip" id="skipBtn" type="button">Bỏ qua »</button>
+      </div>
+      <div class="ed-tabs"><span class="ed-tab active"><b class="lang-dot" data-lang="js"></b><span id="edTab">tri_an_thay.js</span></span></div>
+      <div class="ed-body" id="edBody"><div class="code" id="introCode"></div></div>
+      <div class="ed-term">
+        <div class="term-head">TERMINAL</div>
+        <div id="termOut"></div>
+      </div>
+    </div>
+    <div class="intro-cta" id="introCta" hidden>
+      <button class="run-btn" id="runBtn" type="button"><span class="play" aria-hidden="true"></span><span id="runText">moThiep()</span></button>
+      <p class="hint" id="introHint"></p>
+    </div>
+  </section>
+
+  <!-- ================= LỚP GAME (khi bật trong config) ================= -->
+  <div id="gameLayer" class="game-layer" hidden>
+    <iframe id="gameFrame" title="Game" allow="autoplay; fullscreen"></iframe>
+    <button class="game-close" id="gameClose" type="button" aria-label="Đóng game">×</button>
+  </div>
+
+  <!-- ================= MÀN 2: THIỆP ================= -->
+  <main id="cardStage" class="stage" hidden>
+    <header class="topbar">
+      <span class="brand">&lt;20.11 /&gt;</span>
+      <div class="tb-actions">
+        <button class="chip-btn" id="musicBtn" type="button" hidden>♪ Nhạc</button>
+        <button class="chip-btn" id="replayBtn" type="button">↺ Xem lại code</button>
+        <a class="chip-btn pink" id="writeLink" href="wish.html">✎ Viết thiệp</a>
+      </div>
+    </header>
+
+    <!-- Bìa thiệp -->
+    <div class="book" id="book">
+      <div class="paper"></div>
+      <div class="cover" id="cover" role="button" tabindex="0" aria-label="Mở thiệp">
+        <div class="cv-art" id="cvArt"></div>
+        <div class="cv-text">
+          <div class="cv-kicker" id="cvKicker"></div>
+          <div class="cv-date" id="cvDate"></div>
+          <div class="cv-to" id="cvTo"></div>
+          <div class="cv-name" id="cvName"></div>
+          <div class="cv-divider"><i></i><svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 21s-7-4.6-9.3-9C1 8.3 3.3 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.7 0 6 3.8 4.3 7.5C19 16.4 12 21 12 21z" fill="#FF8FAB"/></svg><i></i></div>
+          <div class="cv-sub" id="cvSub"></div>
+          <button class="open-btn" id="openBtn" type="button"></button>
+        </div>
+        <span class="cv-tag" id="cvTag"></span>
+        <span class="cv-stk s1" id="cvStk1"></span>
+        <span class="cv-stk s2" id="cvStk2"></span>
+      </div>
+    </div>
+
+    <!-- Bên trong thiệp -->
+    <article class="inside" id="inside" hidden>
+      <span class="in-stk a" id="inStk1"></span>
+      <span class="in-stk b" id="inStk2"></span>
+      <div class="inside-head">
+        <span class="ribbon" id="ribbon"></span>
+        <h1 class="inside-title" id="inTitle"></h1>
+        <p class="inside-sub" id="inSub"></p>
+      </div>
+
+      <div class="inside-grid">
+        <div class="letter">
+          <span class="tape"></span>
+          <p class="greet" id="greet"></p>
+          <div id="letterBody"></div>
+          <p class="closing" id="closing"></p>
+          <p class="sign" id="sign"></p>
+        </div>
+
+        <div class="side">
+          <div class="editor card-editor">
+            <div class="ed-bar">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="ed-title">loi_chuc_gui_thay/</span>
+            </div>
+            <div class="ed-tabs" id="wishTabs" role="tablist"></div>
+            <div class="ed-body"><div class="code" id="wishCode"></div></div>
+            <div class="ed-run">
+              <span class="ed-hint">Bấm Run để chạy lời chúc</span>
+              <button class="mini-run" id="runWish" type="button">▶ Run</button>
+            </div>
+            <div class="ed-out" id="wishOut"><span class="t-com">// output sẽ hiện ở đây</span></div>
+          </div>
+
+          <div class="status" id="status">
+            <div class="status-head"><span class="t-self">thay</span>.<span class="t-fn">status</span>()</div>
+            <div id="statusList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qr-strip" id="qrStrip">
+        <div class="qr-box" id="qrMain"></div>
+        <div class="qr-text">
+          <h3 id="qrTitle"></h3>
+          <p id="qrCaption"></p>
+          <a class="btn" id="qrLink" href="wish.html"></a>
+          <p class="qr-note" id="qrNote" hidden></p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Bức tường lời chúc -->
+    <section class="wall" id="wall" hidden>
+      <div class="wall-head">
+        <h2 id="wallTitle"></h2>
+        <p id="wallSub"></p>
+      </div>
+      <div class="notes" id="notes"></div>
+    </section>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="assets/vendor/qrcode.min.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>

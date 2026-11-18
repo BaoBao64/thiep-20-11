@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thiệp sáng tạo · Gửi Thầy</title>
+  <meta name="description" content="Tự tay viết một tấm thiệp bằng code gửi Thầy nhân ngày 20/11.">
+  <meta name="theme-color" content="#ef476f">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page-wish">
+  <div id="scene" class="scene" aria-hidden="true"></div>
+
+  <main class="wish-wrap">
+    <div class="wish-top">
+      <span class="brand">&lt;thiep_sang_tao /&gt;</span>
+      <a class="chip-btn" href="index.html" id="backLink">♥ Xem thiệp chính</a>
+    </div>
+
+    <!-- ========== CHẾ ĐỘ VIẾT THIỆP ========== -->
+    <div id="editorView">
+      <header class="wish-head">
+        <span class="ribbon">Ngày Nhà giáo Việt Nam · 20.11</span>
+        <h1 id="wishTitle"></h1>
+        <p id="wishSub"></p>
+      </header>
+
+      <div class="wish-grid">
+        <form class="panel" id="wishForm" autocomplete="off" novalidate>
+          <h2 class="panel-title"><span class="num">1</span> Viết lời chúc</h2>
+          <div class="row2">
+            <div class="field">
+              <label for="fName">Tên của bạn <small>bắt buộc</small></label>
+              <input type="text" id="fName" maxlength="40" placeholder="Ví dụ: Minh Anh">
+            </div>
+            <div class="field">
+              <label for="fClass">Lớp</label>
+              <input type="text" id="fClass" maxlength="20" placeholder="Ví dụ: 12A1">
+            </div>
+          </div>
+          <div class="field">
+            <label for="fMsg">Lời chúc gửi Thầy <small><span id="count">0</span>/<span id="max">500</span> · <button type="button" class="link-btn" id="suggestBtn">Gợi ý cho mình</button></small></label>
+            <textarea id="fMsg" maxlength="500" placeholder="Viết vài dòng thật lòng gửi Thầy nhé..."></textarea>
+          </div>
+
+          <h2 class="panel-title"><span class="num">2</span> Trang trí thiệp</h2>
+          <div class="field">
+            <span class="label">Ngôn ngữ lập trình</span>
+            <div class="chips" id="langChips"></div>
+          </div>
+          <div class="field">
+            <span class="label">Màu thiệp</span>
+            <div class="chips" id="themeChips"></div>
+          </div>
+          <div class="field">
+            <span class="label">Sticker</span>
+            <div class="chips" id="stkChips"></div>
+          </div>
+          <div class="field">
+            <span class="label">Hiển thị</span>
+            <div class="chips" id="viewChips"></div>
+          </div>
+        </form>
+
+        <div class="preview-col">
+          <span class="preview-label">// xem trước thiệp của bạn</span>
+          <div class="mini-card" id="preview"></div>
+          <div class="actions">
+            <button class="btn" id="sendBtn" type="button">♥ Gửi lời chúc đến Thầy</button>
+            <button class="btn navy" id="shareBtn" type="button">Tạo link &amp; QR</button>
+            <button class="btn ghost" id="dlBtn" type="button">Tải ảnh thiệp</button>
+          </div>
+          <p class="send-note" id="sendNote"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHẾ ĐỘ XEM THIỆP (mở từ link chia sẻ) ========== -->
+    <div id="viewMode" class="view-mode" hidden>
+      <header class="wish-head">
+        <span class="ribbon">Bạn nhận được một tấm thiệp</span>
+      </header>
+      <div class="mini-card" id="viewCard"></div>
+      <div class="actions">
+        <a class="btn" href="wish.html" id="writeOwn">✎ Viết thiệp của riêng bạn</a>
+        <button class="btn ghost" id="dlBtn2" type="button">Tải ảnh thiệp</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Hộp chia sẻ -->
+  <div class="modal" id="shareModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <h3 id="shareTitle">Thiệp của bạn đã sẵn sàng!</h3>
+      <p>Gửi link hoặc cho người khác quét mã QR để mở tấm thiệp này.</p>
+      <div class="qr-box" id="shareQR"></div>
+      <div class="copy-row">
+        <input type="text" id="shareUrl" readonly>
+        <button class="btn navy" id="copyBtn" type="button">Sao chép</button>
+      </div>
+      <div class="actions" style="margin-top:6px">
+        <a class="btn ghost" id="openShare" href="#" target="_blank" rel="noopener">Mở thử</a>
+        <button class="btn" id="closeModal" type="button">Xong</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="assets/vendor/qrcode.min.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/wish.js"></script>
+</body>
+</html>

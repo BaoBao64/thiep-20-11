@@ -1,0 +1,232 @@
+/* ==========================================================================
+   CẤU HÌNH THIỆP 20/11 — BẠN CHỈ CẦN SỬA FILE NÀY LÀ ĐỦ
+   --------------------------------------------------------------------------
+   • Mẹo: viết {thay} ở bất cứ đâu -> tự thay bằng tên thầy bên dưới.
+          {danh_xung} -> "Thầy", {toi} -> tên bạn, {lop} -> lớp, {ngay} -> ngày.
+   • Các đoạn code nằm giữa hai dấu ` (backtick). Bên trong đoạn code
+     KHÔNG dùng dấu ` và không viết ${ ... } để tránh lỗi.
+   • Sửa xong chỉ cần lưu file rồi tải lại trang (F5).
+   • Mở nhanh thiệp (bỏ qua màn code) khi đang chỉnh: index.html?skip=1
+   ========================================================================== */
+
+window.CONFIG = {
+  /* ---------- THÔNG TIN CHUNG ---------- */
+  teacher: {
+    honorific: "Thầy",
+    name: "Nguyễn Trường Phú",
+    subject: "Giáo viên Tin học · ICT",
+  },
+  sender: {
+    name: "Học trò của Thầy",   // <- tên bạn (hiện ở chữ ký)
+    className: "",              // <- lớp của bạn, ví dụ "12A1"
+  },
+  occasion: "Ngày Nhà giáo Việt Nam",
+  date: "20/11/2026",
+  pageTitle: "Thiệp 20/11 · Kính tặng {danh_xung} {thay}",
+
+  /* ---------- MÀN 1: NHỮNG DÒNG CODE XUẤT HIỆN ---------- */
+  intro: {
+    enabled: true,
+    filename: "tri_an_thay.js",
+    language: "js",            // js | py | cpp | html | sql | bash
+    typingSpeed: 20,           // mili-giây cho mỗi ký tự (nhỏ = gõ nhanh)
+    code: `// tri_an_thay.js — {occasion} {ngay}
+import { LongBietOn } from "trai-tim-hoc-tro";
+
+const thay = new NguoiThay({
+  ten: "{thay}",
+  mon: "Tin học - ICT",
+  kienNhan: Infinity,
+  tamHuyet: Number.MAX_SAFE_INTEGER,
+});
+
+const hocTro = new HocTro({ tinhNghich: true, hamHoc: true });
+
+// Mỗi ngày Thầy đứng lớp là một vòng lặp yêu thương
+while (thay.dangDay()) {
+  hocTro.kienThuc++;
+  hocTro.uocMo.push("một tương lai tươi sáng");
+}
+
+try {
+  hocTro.guiLoiCamOn(thay, new LongBietOn());
+} catch (loi) {
+  // không bao giờ xảy ra: lòng biết ơn không có bug
+}
+
+export default moThiep; // Món quà đang chờ Thầy...`,
+    terminal: [
+      "$ node tri_an_thay.js",
+      "› Đang biên dịch lòng biết ơn {bar}",
+      "› Tìm thấy 1 người thầy tuyệt vời: {danh_xung} {thay}",
+      "› 0 errors · 0 warnings · ∞ yêu thương",
+      "✔ Build thành công! Món quà đã sẵn sàng.",
+    ],
+    buttonText: "moThiep()",
+    hint: "Nhấn để mở món quà dành tặng {danh_xung}",
+  },
+
+  /* ---------- MÀN 2: BÌA THIỆP ---------- */
+  cover: {
+    kicker: "Ngày Nhà giáo Việt Nam",
+    bigDate: "20.11",
+    to: "Kính tặng",
+    tagline: "</> made with love",
+    openText: "Mở thiệp",
+  },
+
+  /* ---------- MÀN 3: BÊN TRONG THIỆP ---------- */
+  card: {
+    ribbon: "Happy Teachers' Day",
+    title: "[Tri ân] {danh_xung} {thay}",   // chữ trong [ ] sẽ viết kiểu chữ viết tay
+    subtitle: "{ngay} · Một chương trình nhỏ, chạy bằng cả trái tim",
+    greeting: "Kính gửi {danh_xung} {thay},",
+    letter: [
+      "Nhân dịp kỷ niệm Ngày Nhà giáo Việt Nam 20/11, em xin gửi đến Thầy lời tri ân sâu sắc nhất từ tận đáy lòng.",
+      "Cảm ơn Thầy đã kiên nhẫn dẫn dắt chúng em bước vào thế giới của những dòng lệnh, thuật toán và công nghệ. Ở lớp của Thầy, mỗi lỗi sai đều trở thành một bài học, và mỗi chương trình chạy thành công đều có bóng dáng tận tụy của Thầy.",
+      "Nếu cuộc đời là một chương trình, thì Thầy chính là người đã viết những dòng code đầu tiên — vững vàng, tỉ mỉ và đầy yêu thương — để chúng em tự tin chạy tiếp hành trình của mình.",
+      "Kính chúc Thầy luôn dồi dào sức khỏe, hạnh phúc bên gia đình và mãi giữ ngọn lửa đam mê với nghề. Chúc mọi “dự án” trong cuộc sống của Thầy đều build thành công, không một bug nào!",
+    ],
+    closing: "Kính thư,",
+    signature: "{toi}",
+  },
+
+  /* Các "tab" lời chúc bằng code. Thêm / bớt thoải mái.
+     lang: js | py | cpp | html | sql | bash
+     output: chữ hiện ra khi bấm nút ▶ Run                                 */
+  codeWishes: [
+    {
+      file: "loi_chuc.py",
+      lang: "py",
+      code: `# loi_chuc.py — chạy một lần, hiệu lực trọn đời
+class LoiChuc:
+    def __init__(self, nguoi_nhan):
+        self.nguoi_nhan = nguoi_nhan
+        self.suc_khoe = "100%"        # luôn đầy pin
+        self.niem_vui = float("inf")  # không giới hạn
+        self.so_bug = 0               # mọi việc trơn tru
+
+    def gui(self):
+        for dieu in ["bình an", "hạnh phúc", "thành công"]:
+            print(f"Chúc Thầy {dieu} mãi mãi!")
+
+LoiChuc("{danh_xung} {thay}").gui()`,
+      output: "Chúc Thầy bình an mãi mãi!\nChúc Thầy hạnh phúc mãi mãi!\nChúc Thầy thành công mãi mãi!",
+    },
+    {
+      file: "tri_an.js",
+      lang: "js",
+      code: `// tri_an.js
+const camOn = (thay) => ({
+  vi: ["kiến thức", "sự kiên nhẫn", "những lời động viên"],
+  thoiHan: "mãi mãi",
+});
+
+function chucThay(nam = 2026) {
+  return {
+    sucKhoe: "uptime 99.999%",
+    congViec: "0 bug · 0 warning",
+    giaDinh: "luôn đồng bộ yêu thương",
+    hocTro: "ngày càng giỏi hơn :)",
+  };
+}
+
+console.log("Chúc mừng ngày 20/11, thưa Thầy!");`,
+      output: "Chúc mừng ngày 20/11, thưa Thầy!",
+    },
+    {
+      file: "thay.html",
+      lang: "html",
+      code: `<!-- Trang web đẹp nhất là trang có Thầy -->
+<section class="nguoi-lai-do">
+  <h1>Cảm ơn {danh_xung} {thay}</h1>
+  <p>Thầy là &lt;header&gt; dẫn lối cho mọi bài học,</p>
+  <p>là &lt;main&gt; chứa những điều quý giá nhất,</p>
+  <p>và là &lt;footer&gt; vững chãi phía sau chúng em.</p>
+  <footer>Made with &lt;3 by học trò của Thầy</footer>
+</section>`,
+      output: "Trình duyệt hiển thị: Cảm ơn {danh_xung} {thay} ♥",
+    },
+    {
+      file: "ky_niem.sql",
+      lang: "sql",
+      code: `-- Truy vấn lòng biết ơn
+SELECT loi_chuc
+FROM trai_tim_hoc_tro
+WHERE nguoi_nhan = '{danh_xung} {thay}'
+ORDER BY tinh_cam DESC
+LIMIT 1;`,
+      output: "1 row: \"Chúc Thầy mạnh khỏe, hạnh phúc và mãi yêu nghề!\"",
+    },
+    {
+      file: "commit.sh",
+      lang: "bash",
+      code: `$ git checkout -b hanh-trang-vao-doi
+$ git add kien-thuc/ ky-niem/ uoc-mo/
+$ git commit -m "Cảm ơn Thầy vì tất cả - 20/11"
+$ git push origin tuong-lai`,
+      output: "✔ Đã đẩy lòng biết ơn lên mọi nhánh của cuộc đời.",
+    },
+  ],
+
+  /* "Bảng trạng thái" vui nhộn */
+  status: [
+    { label: "Sức khỏe", value: 100, text: "100%", color: "#06D6A0" },
+    { label: "Hạnh phúc", value: 100, text: "100%", color: "#FF8FAB" },
+    { label: "Niềm vui", value: 100, text: "100%", color: "#FFB703" },
+    { label: "Lòng biết ơn", value: 100, text: "∞", color: "#9B7BFF" },
+  ],
+
+  /* ---------- MÃ QR: mọi người quét để viết thiệp gửi Thầy ---------- */
+  qr: {
+    enabled: true,
+    // Để trống "" = tự trỏ tới trang wish.html cùng thư mục.
+    // Nếu muốn chắc chắn, dán link web đã đăng, ví dụ:
+    // "https://ten-ban.github.io/thiep-20-11/wish.html"
+    url: "https://baobao64.github.io/thiep-20-11/wish.html",
+    title: "Gửi lời chúc đến Thầy",
+    caption: "Quét mã để tự tay viết một tấm thiệp bằng code gửi {danh_xung} {thay}.",
+    button: "Viết thiệp ngay",
+  },
+
+  /* ---------- NƠI NHẬN LỜI CHÚC (tuỳ chọn) ----------
+     Dán link Google Apps Script (xem README.md) để lời chúc của mọi người
+     được lưu vào Google Sheet và hiện lên "Bức tường lời chúc".            */
+  wishes: {
+    endpoint: "",
+    showWall: true,
+    wallTitle: "Bức tường lời chúc",
+    wallSubtitle: "Những dòng code yêu thương từ học trò gửi {danh_xung}",
+    maxLength: 500,
+  },
+
+  /* ---------- TRANG THIỆP SÁNG TẠO (wish.html) ---------- */
+  wishPage: {
+    title: "Viết thiệp gửi {danh_xung}",
+    subtitle: "Chọn ngôn ngữ, chọn màu, viết vài dòng — hệ thống sẽ “biên dịch” lời chúc của bạn thành một tấm thiệp code xinh xắn.",
+    samples: [
+      "Chúc Thầy luôn mạnh khỏe, vui vẻ và mãi giữ ngọn lửa đam mê với nghề. Cảm ơn Thầy vì những giờ Tin học thật thú vị!",
+      "Cảm ơn Thầy đã kiên nhẫn “debug” cho chúng em từng dòng code. Chúc Thầy một ngày 20/11 thật nhiều niềm vui!",
+      "Nếu cuộc sống là một chương trình, chúc Thầy luôn chạy mượt, không lỗi và tràn đầy hạnh phúc.",
+      "Chúc Thầy 20/11 thật ấm áp. Chúng em hứa sẽ học thật chăm để không phụ công Thầy!",
+    ],
+  },
+
+  /* ---------- GẮN GAME (để sau) ----------
+     enabled: true  -> phải thắng game mới mở được thiệp (thiệp là phần quà).
+     mode: "embed"    -> game mở ngay trong trang (iframe), thắng là hiện thiệp.
+           "redirect" -> chuyển sang trang game; thắng thì quay về
+                         index.html?gift=unlocked
+     Xem game/index.html để biết game cần gọi gì khi người chơi thắng.     */
+  game: {
+    enabled: false,
+    url: "game/index.html",
+    mode: "embed",
+    buttonText: "choiGame()",
+    hint: "Hoàn thành thử thách để mở món quà",
+  },
+
+  /* ---------- NHẠC NỀN (tuỳ chọn) ----------
+     Bỏ file nhạc vào thư mục assets rồi ghi: "assets/nhac.mp3"            */
+  music: { url: "" },
+};
