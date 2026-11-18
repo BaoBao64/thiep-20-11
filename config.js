@@ -194,7 +194,7 @@ $ git push origin tuong-lai`,
      Dán link Google Apps Script (xem README.md) để lời chúc của mọi người
      được lưu vào Google Sheet và hiện lên "Bức tường lời chúc".            */
   wishes: {
-    endpoint: "https://script.google.com/macros/s/AKfycbyNHWVgQmpN9rV7H1yGk0BObF89wGUV0QFacgjcFFo3ts557v24yYQ_c3MD8xDkIB03MA/exec",
+    endpoint: "https://script.google.com/macros/s/AKfycbzxEc7glEtxMY_qOGHfsKzrpjZCtLIWNeG_Dv0l55zu4Lq-zev-3JcQNDqVQdcqwgvK-w/exec",
     showWall: true,
     wallTitle: "Bức tường lời chúc",
     wallSubtitle: "Những dòng code yêu thương từ học trò gửi {danh_xung}",
