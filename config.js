@@ -249,7 +249,7 @@ $ git push origin tuong-lai`,
     albumTitle: "Album kỷ niệm",
     album: [
       { src: ["uploads/album-lop-chup-chung.jpg", "uploads/album-lop-chup-chung-2.jpg"], caption: "Thầy Phú và đàn con" },
-      { src: ["uploads/album-hoat-dong-ngoai-troi.jpg", "uploads/album-flashmob-2.jpg"], caption: "Flashmob" },
+      { src: ["uploads/album-hoat-dong-ngoai-troi.jpg", "uploads/album-flashmob-2.jpg", "uploads/album-dan-con-tho.jpg"], caption: "Flashmob" },
       { src: "uploads/album-sinh-nhat-thay.jpg", caption: "Sinh nhật Thầy" },
       { src: ["uploads/album-hoat-dong-dau-tien.jpg", "uploads/album-hoat-dong-dau-tien-2.jpg", "uploads/album-hoat-dong-dau-tien-3.jpg"], caption: "Hoạt động đầu tiên" },
       { src: "uploads/album-chua-thay-loi-hoi-dap.jpg", caption: "Chưa thấy lời hồi đáp" },
@@ -257,9 +257,19 @@ $ git push origin tuong-lai`,
       { src: ["uploads/album-hop-ph-2.jpg", "uploads/album-hop-ph-3.jpg", "uploads/album-hop-ph.jpg"], caption: "Họp PH" },
       { src: ["uploads/album-ba-khi.jpg", "uploads/album-ba-khi-2.jpg"], caption: "Bá khí" },
       { src: "uploads/album-tiet-ict-dau-tien.jpg", caption: "Tiết ICT đầu tiên" },
-      { src: "uploads/album-dan-con-tho.jpg", caption: "Đàn con thơ" },
       { src: "uploads/album-tra-chieu.jpg", caption: "Trà chiều" },
     ],
+  },
+
+  /* ---------- EKIP THỰC HIỆN (hiện ở cuối thiệp) ---------- */
+  credits: {
+    title: "Ekip thực hiện",
+    people: [
+      { role: "Thiết kế & hoàn thiện", name: "Hồ Gia Bảo" },
+      { role: "Thiết kế game", name: "Nguyễn Minh Tài" },
+      { role: "Truyền thông & viết lời", name: "Nguyễn Ngọc Ngân Chi" },
+    ],
+    note: "Sản phẩm được tạo bởi tình yêu thương cũng như góp sức của tất cả mọi thành viên 10A7",
   },
 
   /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */

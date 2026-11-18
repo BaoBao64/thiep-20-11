@@ -7,7 +7,7 @@
   const U = window.Thiep, C = window.CONFIG;
   const { $, esc, store, toast } = U;
   const TOKEN_KEY = "thiep2011_gh_token";
-  const SAVE_KEYS = ["teacher", "sender", "occasion", "date", "intro", "cover", "card", "codeWishes", "status", "qr", "wishes", "music", "images"];
+  const SAVE_KEYS = ["teacher", "sender", "occasion", "date", "intro", "cover", "card", "codeWishes", "status", "qr", "wishes", "music", "images", "credits"];
   const GH = () => Object.assign({ owner: "BaoBao64", repo: "thiep-20-11", branch: "main" }, C.github || {});
 
   C.images = C.images || { cover: "", albumTitle: "Album kỷ niệm", album: [] };

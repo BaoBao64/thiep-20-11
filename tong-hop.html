@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bảng tổng hợp lời chúc</title>
+  <meta name="description" content="Tổng hợp lời chúc mọi người gửi Thầy nhân ngày 20/11.">
+  <meta name="theme-color" content="#1d3557">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css?v=20261118l">
+  <link rel="stylesheet" href="assets/tonghop.css?v=20261118l">
+</head>
+<body class="page-sum">
+  <main class="sum-wrap">
+    <div class="wish-top">
+      <span class="brand">&lt;tong_hop_loi_chuc /&gt;</span>
+      <div class="tb-actions">
+        <a class="chip-btn" href="index.html">♥ Thiệp chính</a>
+        <a class="chip-btn pink" href="wish.html">✎ Viết lời chúc</a>
+      </div>
+    </div>
+
+    <header class="sum-head">
+      <span class="ribbon">Ngày Nhà giáo Việt Nam · 20.11</span>
+      <h1 id="sumTitle">Bảng tổng hợp lời chúc</h1>
+      <p id="sumSub"></p>
+    </header>
+
+    <div class="sum-stats">
+      <div class="stat"><b id="stCount">0</b><span>lời chúc</span></div>
+      <div class="stat"><b id="stPeople">0</b><span>người gửi</span></div>
+      <div class="stat"><b id="stClasses">0</b><span>lớp</span></div>
+      <div class="stat"><b id="stUpdated">—</b><span>cập nhật</span></div>
+    </div>
+
+    <p class="sum-alert" id="sumAlert" hidden></p>
+
+    <section class="sum-panel">
+      <div class="sum-tools">
+        <label class="sum-search" for="q"><span class="sr">Tìm kiếm</span>
+          <input id="q" type="search" placeholder="Tìm theo tên, lớp hoặc nội dung..." autocomplete="off">
+        </label>
+        <select id="sort" aria-label="Sắp xếp">
+          <option value="new">Mới nhất trước</option>
+          <option value="old">Cũ nhất trước</option>
+          <option value="name">Tên A → Z</option>
+          <option value="class">Theo lớp</option>
+        </select>
+        <div class="sum-btns">
+          <button class="ep-mini" id="refresh" type="button">↻ Tải lại</button>
+          <button class="ep-mini" id="copyAll" type="button">Sao chép tất cả</button>
+          <button class="ep-mini" id="csv" type="button">Tải file Excel</button>
+          <button class="ep-mini" id="print" type="button">In</button>
+        </div>
+      </div>
+
+      <div class="sum-table-wrap">
+        <table class="sum-table">
+          <thead>
+            <tr><th class="c-no">#</th><th class="c-name">Người gửi</th><th class="c-class">Lớp</th><th>Lời chúc</th><th class="c-lang">Ngôn ngữ</th><th class="c-time">Thời gian</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="sum-empty" id="empty" hidden></p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="config.js?v=20261118l"></script>
+  <script src="assets/common.js?v=20261118l"></script>
+  <script src="assets/tonghop.js?v=20261118l"></script>
+</body>
+</html>

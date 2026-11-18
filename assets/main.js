@@ -253,7 +253,8 @@
 
       renderAlbum();
       renderQR();
-      $("#foot").innerHTML = `<span class="t-com">// </span>${esc(fill("Made with ♥ bởi {toi} · {occasion} {ngay}"))}`;
+      renderCredits();
+      $("#foot").innerHTML = `<span class="t-com">// </span>${esc(fill("Made with ♥ bởi {toi} · {occasion} {ngay}"))} · <a href="tong-hop.html">Bảng tổng hợp lời chúc</a>`;
       (U.afterRender || []).forEach((fn) => fn());
     }
 
@@ -345,6 +346,20 @@
       if (e.key === "Escape") $("#lightbox").hidden = true;
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") $(e.key === "ArrowRight" ? "#lbNext" : "#lbPrev").click();
     });
+
+    /* ---------- EKIP THỰC HIỆN ---------- */
+    function renderCredits() {
+      const cr = C.credits;
+      $("#credits").hidden = !cr || !(cr.people || []).length;
+      if (!cr) return;
+      $("#crTitle").textContent = fill(cr.title || "Ekip thực hiện");
+      $("#crList").innerHTML = (cr.people || []).map((p, i) => `<div class="cr-item">
+          <span class="cr-role" data-edit="credits.people.${i}.role">${esc(p.role)}</span>
+          <span class="cr-dots" aria-hidden="true"></span>
+          <span class="cr-name" data-edit="credits.people.${i}.name">${esc(p.name)}</span>
+        </div>`).join("");
+      $("#crNote").textContent = fill(cr.note || "");
+    }
 
     /* ---------- QR ---------- */
     function renderQR() {

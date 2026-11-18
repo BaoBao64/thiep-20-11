@@ -1,0 +1,56 @@
+/* tonghop.css — giao diện bảng tổng hợp lời chúc */
+.page-sum { background: linear-gradient(180deg, #e8f5ff 0%, #fff6ea 100%) fixed; background-color: #f3f8fd; }
+.sum-wrap { width: min(1160px, 100%); margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 80px max(16px, env(safe-area-inset-left, 0px)); }
+.sum-head { text-align: center; margin: 18px auto 22px; max-width: 760px; }
+.sum-head h1 { font: 700 clamp(28px, 4.4vw, 44px)/1.15 var(--f-serif); color: var(--navy); margin: 14px 0 8px; text-wrap: balance; }
+.sum-head h1 .script { font-family: var(--f-script); color: var(--rose); font-size: 1.08em; }
+.sum-head p { margin: 0; color: var(--ink-2); line-height: 1.6; }
+.sum-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat { background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 10px 24px -16px rgba(29, 53, 87, .45); display: flex; flex-direction: column; gap: 2px; }
+.stat b { font: 800 26px var(--f-mono); color: var(--navy); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 13px; color: var(--ink-2); }
+.sum-alert { background: #fff6da; border: 1.5px solid #ffe08a; color: #6b4b00; border-radius: 14px; padding: 12px 16px; margin: 0 0 16px; line-height: 1.55; font-size: 14.5px; }
+.sum-panel { background: #fff; border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
+.sum-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 16px; border-bottom: 1px solid #e8eef6; }
+.sum-search { flex: 1 1 260px; min-width: 0; }
+.sum-search input, #sort { width: 100%; font: 15px var(--f-body); padding: 10px 14px; border: 2px solid #e3eaf3; border-radius: 12px; outline: none; color: var(--ink); background: #fff; }
+.sum-search input:focus, #sort:focus { border-color: var(--pink); }
+#sort { width: auto; flex: 0 0 auto; }
+.sum-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.sum-table-wrap { overflow-x: auto; }
+.sum-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.sum-table th { text-align: left; font: 700 12px var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); background: #f6f9fd; padding: 12px 14px; white-space: nowrap; }
+.sum-table td { padding: 14px; border-top: 1px solid #eef2f7; vertical-align: top; }
+.sum-table tbody tr:nth-child(even) td { background: #fcfdff; }
+.sum-table tbody tr:hover td { background: #fff5f8; }
+.c-no { width: 44px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.c-name { min-width: 140px; }
+.c-name b { color: var(--navy); }
+.c-class { width: 80px; white-space: nowrap; }
+.c-msg { min-width: 280px; font: 19px/1.45 var(--f-hand); color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+.c-lang { width: 120px; white-space: nowrap; }
+.c-time { width: 150px; white-space: nowrap; color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.lang { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px var(--f-mono); }
+.tag { display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: #eef8ff; color: #0b5a7a; font: 600 11px var(--f-body); }
+.sum-empty { margin: 0; padding: 36px 16px; text-align: center; color: var(--ink-2); }
+
+@media (max-width: 760px) {
+  .sum-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sum-table thead { display: none; }
+  .sum-table, .sum-table tbody, .sum-table tr, .sum-table td { display: block; width: 100%; }
+  .sum-table tr { padding: 12px 16px; border-top: 1px solid #eef2f7; }
+  .sum-table td { border: 0; padding: 3px 0; background: none !important; min-width: 0; }
+  .sum-table td.c-no { display: none; }
+  .sum-table td.c-class::before, .sum-table td.c-lang::before, .sum-table td.c-time::before { content: attr(data-label) ": "; font: 600 12px var(--f-body); color: var(--ink-2); }
+  .sum-table td.c-class, .sum-table td.c-lang, .sum-table td.c-time { display: inline-block; width: auto; margin-right: 12px; }
+  .c-msg { font-size: 18px; padding: 6px 0 !important; }
+  #sort { flex: 1 1 auto; }
+}
+
+@media print {
+  .page-sum { background: #fff; }
+  .wish-top, .sum-tools, .sum-alert, .toast { display: none !important; }
+  .sum-panel, .stat { box-shadow: none; border: 1px solid #ddd; }
+  .sum-table tbody tr { break-inside: avoid; }
+}

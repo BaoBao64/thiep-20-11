@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Patrick+Hand&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=20261118k">
+  <link rel="stylesheet" href="assets/style.css?v=20261118l">
 </head>
 <body class="page-main intro-on">
 
@@ -136,9 +136,22 @@
       <div class="wall-head">
         <h2 id="wallTitle" data-edit="wishes.wallTitle"></h2>
         <p id="wallSub" data-edit="wishes.wallSubtitle"></p>
+        <a class="wall-link" href="tong-hop.html">Xem bảng tổng hợp lời chúc →</a>
       </div>
       <div class="notes" id="notes"></div>
       <p class="wall-empty" id="wallEmpty" hidden>Chưa có lời chúc nào. Lời chúc mọi người gửi từ trang “Viết thiệp” sẽ hiện ở đây.</p>
+    </section>
+
+    <!-- Ekip thực hiện -->
+    <section class="credits" id="credits" hidden>
+      <div class="cr-bar"><span class="dots"><i></i><i></i><i></i></span><span>credits.js</span></div>
+      <div class="cr-body">
+        <p class="cr-kicker">// những người đứng sau tấm thiệp</p>
+        <h2 class="cr-title" id="crTitle" data-edit="credits.title"></h2>
+        <div class="cr-list" id="crList"></div>
+        <p class="cr-note"><span class="cr-heart" aria-hidden="true">♥</span><span id="crNote" data-edit="credits.note"></span></p>
+        <p class="cr-code"><span class="t-kw">export default</span> <span class="t-kw">new</span> <span class="t-cls">TapThe</span>(<span class="t-str">"10A7"</span>); <span class="t-com">// with love</span></p>
+      </div>
     </section>
 
     <footer class="foot" id="foot"></footer>
@@ -160,9 +173,9 @@
     <button class="lb-nav" id="lbNext" type="button" aria-label="Ảnh sau">›</button>
   </div>
 
-  <script src="config.js?v=20261118k"></script>
-  <script src="assets/vendor/qrcode.min.js?v=20261118k"></script>
-  <script src="assets/common.js?v=20261118k"></script>
-  <script src="assets/main.js?v=20261118k"></script>
+  <script src="config.js?v=20261118l"></script>
+  <script src="assets/vendor/qrcode.min.js?v=20261118l"></script>
+  <script src="assets/common.js?v=20261118l"></script>
+  <script src="assets/main.js?v=20261118l"></script>
 </body>
 </html>
