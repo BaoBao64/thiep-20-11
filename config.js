@@ -234,7 +234,7 @@ $ git push origin tuong-lai`,
   music: {
     title: "Người Gieo Mầm Xanh",
     artist: "Hoàng Dũng · Hứa Kim Tuyền",
-    youtube: "",
+    youtube: "https://youtu.be/J3IRYx3PzzM",
     url: "",
     start: 0,          // bắt đầu phát từ giây thứ mấy
   },
@@ -251,4 +251,7 @@ $ git push origin tuong-lai`,
 
   /* Repository GitHub chứa web — chế độ chỉnh sửa dùng để lưu thay đổi */
   github: { owner: "BaoBao64", repo: "thiep-20-11", branch: "main" },
+
+  /* true = tắt hiệu ứng trên máy bật "Giảm chuyển động". Mặc định luôn chạy hiệu ứng. */
+  respectReducedMotion: false,
 };

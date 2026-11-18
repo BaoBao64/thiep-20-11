@@ -5,7 +5,9 @@
   const C = window.CONFIG || {};
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Mặc định LUÔN chạy hiệu ứng. Đặt CONFIG.respectReducedMotion = true nếu muốn tắt hiệu ứng
+  // cho máy bật "Giảm chuyển động" (Reduce Motion).
+  const reduced = C.respectReducedMotion === true && !!window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -203,6 +205,23 @@
     if (reduced) { renderCode(el, code, lang); setTimeout(finish, 50); }
     else raf = requestAnimationFrame(frame);
     return { skip, get done() { return done; } };
+  }
+
+  /* Gõ từng chữ vào một phần tử. segs = [{ text, cls }] */
+  function typeSegments(el, segs, speed = 18) {
+    return new Promise((resolve) => {
+      if (reduced) { segs.forEach((g) => { const sp = document.createElement("span"); if (g.cls) sp.className = g.cls; sp.textContent = g.text; el.appendChild(sp); }); resolve(); return; }
+      const caret = document.createElement("span"); caret.className = "caret small"; el.appendChild(caret);
+      let si = 0, ci = 0, sp = null;
+      (function tick() {
+        if (si >= segs.length) { caret.remove(); resolve(); return; }
+        const g = segs[si];
+        if (!sp) { sp = document.createElement("span"); if (g.cls) sp.className = g.cls; el.insertBefore(sp, caret); }
+        sp.textContent += g.text[ci++] || "";
+        if (ci >= g.text.length) { si++; ci = 0; sp = null; }
+        setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
+      })();
+    });
   }
 
   /* ---------------- HÌNH VẼ (SVG) ---------------- */
@@ -413,7 +432,7 @@
   }
 
   window.Thiep = {
-    $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode,
+    $, $$, esc, fill, store, reduced, tokenize, renderCode, typeCode, typeSegments,
     STICKERS, bouquetSVG, sceneHTML, confetti, makeQR, encodeData, decodeData, THEMES, toast,
     WISH_KEY: "thiep2011_wishes", UNLOCK_KEY: "thiep2011_unlocked", HIDDEN_KEY: "thiep2011_hidden", ADMIN_KEY: "thiep2011_admin_key",
     EDIT, DRAFT_CONTENT_KEY, ready, deepMerge, localImages, imgSrc, uid,

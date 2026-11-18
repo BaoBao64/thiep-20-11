@@ -22,7 +22,7 @@
 
     function startIntro() {
       const I = C.intro;
-      termTimers.forEach(clearTimeout); termTimers = [];
+      termTimers.forEach(clearTimeout); termTimers = []; termRun++;
       document.body.classList.add("intro-on");
       const intro = $("#intro");
       intro.hidden = false; intro.classList.remove("leave");
@@ -36,42 +36,55 @@
     }
     $("#skipBtn").addEventListener("click", () => typer && typer.skip());
 
-    const termFmt = (s) => esc(s)
-      .replace(/^\$ /, '<span class="t-prompt">$</span> ')
-      .replace(/^(✔|✓)/, '<span class="t-ok">$1</span>')
-      .replace(/^›/, '<span class="t-dim">›</span>');
+    // Tách một dòng terminal thành các đoạn có màu để gõ từng chữ
+    const termSegs = (raw) => {
+      let m;
+      if ((m = /^\$ (.*)$/.exec(raw))) return [{ text: "$", cls: "t-prompt" }, { text: " " + m[1] }];
+      if ((m = /^(✔|✓)(.*)$/.exec(raw))) return [{ text: m[1], cls: "t-ok" }, { text: m[2] }];
+      if ((m = /^›(.*)$/.exec(raw))) return [{ text: "›", cls: "t-dim" }, { text: m[1] }];
+      return raw ? [{ text: raw }] : [];
+    };
+    let termRun = 0;
 
-    function runTerminal() {
+    async function runTerminal() {
       $("#skipBtn").hidden = true;
+      const run = ++termRun;
       const out = $("#termOut"); out.innerHTML = "";
-      const lines = (C.intro.terminal || []).map(fill);
-      let i = 0;
-      const later = (fn, ms) => termTimers.push(setTimeout(fn, U.reduced ? 0 : ms));
-      const next = () => {
-        if (i >= lines.length) { showCta(); return; }
-        const raw = lines[i++], div = document.createElement("div"); div.className = "tl";
-        if (raw.includes("{bar}")) {
-          const [a, b] = raw.split("{bar}");
-          div.innerHTML = `${termFmt(a)}<span class="tbar"><i></i></span><span class="tpct">0%</span>${termFmt(b)}`;
-          out.appendChild(div);
-          const bar = div.querySelector(".tbar i"), pct = div.querySelector(".tpct"), t0 = performance.now(), dur = U.reduced ? 1 : 1500;
-          (function anim(now) {
-            const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-            bar.style.width = e * 100 + "%"; pct.textContent = Math.round(e * 100) + "%";
-            if (p < 1) requestAnimationFrame(anim); else later(next, 250);
-          })(t0);
-        } else { div.innerHTML = termFmt(raw); out.appendChild(div); later(next, 450); }
-        out.parentElement.scrollTop = out.parentElement.scrollHeight;
-      };
-      later(next, 350);
+      const scroll = () => (out.parentElement.scrollTop = out.parentElement.scrollHeight);
+      const wait = (ms) => new Promise((r) => termTimers.push(setTimeout(r, U.reduced ? 0 : ms)));
+      await wait(350);
+      for (const raw of (C.intro.terminal || []).map(fill)) {
+        if (run !== termRun) return;
+        const div = document.createElement("div"); div.className = "tl"; out.appendChild(div); scroll();
+        const [a, b] = raw.split("{bar}");
+        await U.typeSegments(div, termSegs(a), 16);
+        if (b !== undefined) {
+          const bar = document.createElement("span"); bar.className = "tbar"; bar.innerHTML = "<i></i>";
+          const pct = document.createElement("span"); pct.className = "tpct"; pct.textContent = "0%";
+          div.append(bar, pct);
+          await new Promise((res) => {
+            const t0 = performance.now(), dur = U.reduced ? 1 : 1500, i = bar.firstChild;
+            (function anim(now) {
+              const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+              i.style.width = e * 100 + "%"; pct.textContent = Math.round(e * 100) + "%";
+              if (p < 1) requestAnimationFrame(anim); else res();
+            })(t0);
+          });
+          if (b) await U.typeSegments(div, [{ text: b }], 16);
+        }
+        scroll();
+        await wait(260);
+      }
+      if (run === termRun) showCta();
     }
 
     function showCta() {
       const locked = !unlocked();
       $("#runText").textContent = locked ? game.buttonText || "choiGame()" : C.intro.buttonText || "moThiep()";
-      $("#introHint").textContent = fill(locked ? game.hint : C.intro.hint);
+      const hint = $("#introHint"); hint.textContent = "";
       $("#introCta").hidden = false;
       $("#runBtn").focus({ preventScroll: true });
+      U.typeSegments(hint, [{ text: fill(locked ? game.hint : C.intro.hint) }], 28);
     }
 
     // DỪNG Ở ĐÂY: chỉ khi bạn tự tay bấm nút mới chuyển sang thiệp
@@ -416,6 +429,11 @@
               events: {
                 onReady: () => { if (want) yt.playVideo(); },
                 onStateChange: (e) => ui(e.data === 1),
+                onError: (e) => {
+                  // 101/150: chủ video không cho phát trên web khác -> mở thẳng YouTube
+                  $("#ytWrap").innerHTML = `<a class="pl-yt" href="https://youtu.be/${id}" target="_blank" rel="noopener">Mở bài hát trên YouTube ↗</a>`;
+                  ui(false);
+                },
               },
             });
           });
