@@ -247,8 +247,9 @@ $ git push origin tuong-lai`,
     cover: "",
     albumTitle: "Album kỷ niệm",
     album: [
-      { src: "uploads/album-lop-chup-chung.jpg", caption: "Cả lớp cùng Thầy" },
-      { src: "uploads/album-hoat-dong-ngoai-troi.jpg", caption: "Những ngày hoạt động ngoài trời" },
+      { src: "uploads/album-lop-chup-chung.jpg", caption: "Thầy Phú và đàn con" },
+      { src: "uploads/album-hoat-dong-ngoai-troi.jpg", caption: "Flashmob" },
+      { src: "uploads/album-sinh-nhat-thay.jpg", caption: "Sinh nhật Thầy" },
     ],
   },
 
