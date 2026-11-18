@@ -541,3 +541,16 @@ textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
 .yt-ask-head button { border: 0; background: #f3f6fb; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--ink-2); }
 .yt-dock.ask #ytWrap { width: 200px; height: 113px; border-radius: 10px; overflow: hidden; }
 .yt-dock iframe { display: block; }
+
+/* Album: mục nhiều ảnh (tự chuyển) */
+.pol-img { position: relative; }
+.pol-slides { position: relative; display: block; width: 100%; aspect-ratio: var(--ar, 4 / 3); max-height: 420px; border-radius: 3px; overflow: hidden; background: #fff; }
+.pol-slides img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none !important; object-fit: contain; background: #fff !important; opacity: 0; transition: opacity .9s ease; }
+.pol-slides img.on { opacity: 1; }
+.pol-count { position: absolute; top: 8px; right: 8px; padding: 3px 9px; border-radius: 999px; background: rgba(29, 53, 87, .78); color: #fff; font: 700 11.5px var(--f-body); }
+.pol-dots { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
+.pol-dots i { width: 7px; height: 7px; border-radius: 50%; background: #d7e3f4; transition: background .3s, transform .3s; }
+.pol-dots i.on { background: var(--rose); transform: scale(1.25); }
+.lb-nav { position: fixed; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255, 255, 255, .9); color: var(--navy); font: 700 30px/1 var(--f-body); z-index: 2; }
+#lbPrev { left: max(12px, env(safe-area-inset-left, 0px)); }
+#lbNext { right: max(12px, env(safe-area-inset-right, 0px)); }

@@ -281,28 +281,70 @@
       outTimer = setTimeout(tick, 300);
     });
 
-    /* ---------- ALBUM ẢNH ---------- */
+    /* ---------- ALBUM ẢNH ----------
+       Mỗi mục: { src: "anh.jpg", caption } hoặc nhiều ảnh: { src: ["a.jpg", "b.jpg"], caption }
+       Mục nhiều ảnh hiện thành khung ảnh tự chuyển. */
+    const photosOf = (p) => (Array.isArray(p.src) ? p.src : [p.src]).filter(Boolean);
+    const FIT = "const f=this.closest('.pol');if(!f)return;f.classList.toggle('portrait',this.naturalHeight>this.naturalWidth);const b=this.closest('.pol-slides');if(b)b.style.setProperty('--ar',this.naturalWidth+'/'+this.naturalHeight)";
     function renderAlbum() {
       const im = C.images || {}, list = im.album || [];
       const sec = $("#album");
       sec.hidden = !list.length && !EDIT;
       $("#albumTitle").textContent = fill(im.albumTitle || "Album kỷ niệm");
       $("#albumGrid").innerHTML = list.map((p, i) => {
-        const rot = ((i * 47) % 9) - 4;
-        return `<figure class="pol" style="--rot:${rot}deg">
-          <button class="pol-img" type="button" data-view="${i}"><img src="${esc(U.imgSrc(p.src))}" alt="${esc(p.caption || "Ảnh kỷ niệm")}" loading="lazy" onload="this.closest('.pol').classList.toggle('portrait', this.naturalHeight > this.naturalWidth)"></button>
+        const rot = ((i * 47) % 9) - 4, ph = photosOf(p), alt = esc(p.caption || "Ảnh kỷ niệm");
+        const multi = ph.length > 1;
+        const body = multi
+          ? `<span class="pol-slides">${ph.map((s, k) => `<img class="${k ? "" : "on"}" src="${esc(U.imgSrc(s))}" alt="${alt} ${k + 1}"${k ? ' loading="lazy"' : ` onload="${FIT}"`}>`).join("")}</span><span class="pol-count">${ph.length} ảnh</span>`
+          : `<img src="${esc(U.imgSrc(ph[0] || ""))}" alt="${alt}" loading="lazy" onload="${FIT}">`;
+        return `<figure class="pol${multi ? " multi" : ""}" style="--rot:${rot}deg" data-i="${i}">
+          <button class="pol-img" type="button" data-view="${i}">${body}</button>
+          ${multi ? `<span class="pol-dots">${ph.map((_, k) => `<i class="${k ? "" : "on"}"></i>`).join("")}</span>` : ""}
           <figcaption data-edit="images.album.${i}.caption">${esc(p.caption || "")}</figcaption>
-          ${EDIT ? `<button class="pol-del" type="button" data-del="${i}" title="Xoá ảnh">×</button>` : ""}
+          ${EDIT ? `<button class="pol-del" type="button" data-del="${i}" title="Xoá mục này">×</button>` : ""}
         </figure>`;
       }).join("") + (EDIT ? `<button class="pol-add" type="button" id="addPhoto"><b>+</b>Thêm ảnh</button>` : "");
     }
+    // Chuyển ảnh trong các khung nhiều ảnh
+    function showSlide(fig, k) {
+      const imgs = fig.querySelectorAll(".pol-slides img"), dots = fig.querySelectorAll(".pol-dots i");
+      if (!imgs.length) return;
+      k = (k + imgs.length) % imgs.length; fig.dataset.k = k;
+      imgs.forEach((im, j) => im.classList.toggle("on", j === k));
+      dots.forEach((d, j) => d.classList.toggle("on", j === k));
+    }
+    setInterval(() => {
+      if (document.hidden) return;
+      document.querySelectorAll(".pol.multi").forEach((f, n) => {
+        if (f.matches(":hover")) return;
+        setTimeout(() => showSlide(f, (+f.dataset.k || 0) + 1), n * 600);
+      });
+    }, 3800);
+
+    // Xem ảnh lớn, lật qua lại nếu có nhiều ảnh
+    let lb = { list: [], k: 0, cap: "" };
+    function lbShow() {
+      const n = lb.list.length;
+      $("#lightImg").src = U.imgSrc(lb.list[lb.k]);
+      $("#lightCap").textContent = lb.cap + (n > 1 ? ` · ${lb.k + 1}/${n}` : "");
+      $("#lbPrev").hidden = $("#lbNext").hidden = n < 2;
+    }
     $("#albumGrid").addEventListener("click", (e) => {
       const v = e.target.closest("[data-view]"); if (!v || EDIT) return;
-      const p = C.images.album[+v.dataset.view];
-      $("#lightImg").src = U.imgSrc(p.src); $("#lightCap").textContent = p.caption || "";
-      $("#lightbox").hidden = false;
+      const p = C.images.album[+v.dataset.view], fig = v.closest(".pol");
+      lb = { list: photosOf(p), k: +fig.dataset.k || 0, cap: p.caption || "" };
+      lbShow(); $("#lightbox").hidden = false;
     });
-    $("#lightbox").addEventListener("click", () => ($("#lightbox").hidden = true));
+    $("#lightbox").addEventListener("click", (e) => {
+      const nav = e.target.closest(".lb-nav");
+      if (nav) { lb.k = (lb.k + (nav.id === "lbNext" ? 1 : -1) + lb.list.length) % lb.list.length; lbShow(); return; }
+      $("#lightbox").hidden = true;
+    });
+    document.addEventListener("keydown", (e) => {
+      if ($("#lightbox").hidden) return;
+      if (e.key === "Escape") $("#lightbox").hidden = true;
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") $(e.key === "ArrowRight" ? "#lbNext" : "#lbPrev").click();
+    });
 
     /* ---------- QR ---------- */
     function renderQR() {

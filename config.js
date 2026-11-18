@@ -242,6 +242,7 @@ $ git push origin tuong-lai`,
   /* ---------- HÌNH ẢNH ----------
      cover: ảnh thay cho bó hoa trên bìa (để trống = dùng bó hoa).
      album: các ảnh kỷ niệm trong thiệp: [{ src: "uploads/anh.jpg", caption: "Lớp mình" }]
+            nhiều ảnh chung một mục: { src: ["uploads/a.jpg", "uploads/b.jpg"], caption: "..." }
      Dễ nhất là thêm ảnh trong chế độ chỉnh sửa (index.html?edit).           */
   images: {
     cover: "",
@@ -250,11 +251,13 @@ $ git push origin tuong-lai`,
       { src: "uploads/album-lop-chup-chung.jpg", caption: "Thầy Phú và đàn con" },
       { src: "uploads/album-hoat-dong-ngoai-troi.jpg", caption: "Flashmob" },
       { src: "uploads/album-sinh-nhat-thay.jpg", caption: "Sinh nhật Thầy" },
-      { src: "uploads/album-hoat-dong-dau-tien.jpg", caption: "Hoạt động đầu tiên" },
+      { src: ["uploads/album-hoat-dong-dau-tien.jpg", "uploads/album-hoat-dong-dau-tien-2.jpg"], caption: "Hoạt động đầu tiên" },
       { src: "uploads/album-chua-thay-loi-hoi-dap.jpg", caption: "Chưa thấy lời hồi đáp" },
       { src: "uploads/album-len-xe.jpg", caption: "Lên xe" },
-      { src: "uploads/album-hop-ph.jpg", caption: "Họp PH" },
+      { src: ["uploads/album-hop-ph-2.jpg", "uploads/album-hop-ph-3.jpg", "uploads/album-hop-ph.jpg"], caption: "Họp PH" },
       { src: "uploads/album-ba-khi.jpg", caption: "Bá khí" },
+      { src: "uploads/album-tiet-ict-dau-tien.jpg", caption: "Tiết ICT đầu tiên" },
+      { src: "uploads/album-dan-con-tho.jpg", caption: "Đàn con thơ" },
     ],
   },
 

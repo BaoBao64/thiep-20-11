@@ -203,7 +203,7 @@
             </div>
           </div>
           <div class="ep-imgrow">
-            <div class="ep-thumb">${im.album.length ? `<img src="${esc(U.imgSrc(im.album[im.album.length - 1].src))}" alt="">` : "<span>Trống</span>"}</div>
+            <div class="ep-thumb">${im.album.length ? `<img src="${esc(U.imgSrc([].concat(im.album[im.album.length - 1].src)[0]))}" alt="">` : "<span>Trống</span>"}</div>
             <div class="ep-col">
               <b>Album kỷ niệm (${im.album.length} ảnh)</b>
               <button type="button" class="ep-mini" id="epAddPhotos">+ Thêm ảnh</button>
