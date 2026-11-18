@@ -59,11 +59,11 @@
     const list = store.get(KEY, []);
     let sent = 0;
     for (const w of list) {
-      if (w.synced || !w.message) continue;
+      if (w.syncedTo === ep || !w.message) continue;   // đã gửi tới đúng nơi nhận hiện tại
       if (!w.id) w.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       try {
         await fetch(ep, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(w) });
-        w.synced = true; sent++;
+        w.syncedTo = ep; sent++;
       } catch (e) { break; }
     }
     if (sent) store.set(KEY, list);
