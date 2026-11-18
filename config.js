@@ -18,7 +18,7 @@ window.CONFIG = {
     subject: "Giáo viên Tin học · ICT",
   },
   sender: {
-    name: "Học trò của Thầy",   // <- tên bạn (hiện ở chữ ký)
+    name: "Tập thể 10A7",       // <- chữ ký cuối thư
     className: "",              // <- lớp của bạn, ví dụ "12A1"
   },
   occasion: "Ngày Nhà giáo Việt Nam",
@@ -108,11 +108,11 @@ class LoiChuc:
         self.so_bug = 0               # mọi việc trơn tru
 
     def gui(self):
-        for dieu in ["bình an", "hạnh phúc", "thành công"]:
-            print(f"Chúc Thầy {dieu} mãi mãi!")
+        for dieu in ["ăn mau chóng lớn", "thoát ế", "tiền vào như nước"]:
+            print(f"Chúc Thầy {dieu}")
 
 LoiChuc("{danh_xung} {thay}").gui()`,
-      output: "Chúc Thầy bình an mãi mãi!\nChúc Thầy hạnh phúc mãi mãi!\nChúc Thầy thành công mãi mãi!",
+      output: "Chúc Thầy ăn mau chóng lớn\nChúc Thầy thoát ế\nChúc Thầy tiền vào như nước",
     },
     {
       file: "tri_an.js",
