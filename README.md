@@ -9,6 +9,7 @@ Web thiệp tri ân Thầy dạy Tin học, viết theo phong cách lập trình
 | `index.html` | **Thiệp chính**: màn code tự gõ → bấm nút → bìa thiệp → mở thiệp (thư tay + lời chúc bằng code + QR) |
 | `wish.html` | **Thiệp sáng tạo**: mọi người tự viết thiệp gửi Thầy, chọn ngôn ngữ / màu / sticker, tạo link + QR, tải ảnh |
 | `game/` | Game **SCP ICT**: bay qua những cột mã lệnh, thắng 10 điểm thì thiệp (phần quà) mở ra |
+| `scp-ict/` | **Web game SCP ICT riêng**: nhập tên, không giới hạn điểm, có bảng xếp hạng. Link: https://baobao64.github.io/thiep-20-11/scp-ict/ (QR: `qr/qr-scp-ict.png`). Hướng dẫn trong `scp-ict/README.md` |
 | `config.js` | **Toàn bộ chữ, lời chúc, đoạn code, QR, game... đều sửa ở đây** |
 | `content.json` | Nội dung bạn sửa ngay trên web (`?edit`), đè lên `config.js` |
 | `google-apps-script.gs` | Code để nhận lời chúc vào Google Sheet |

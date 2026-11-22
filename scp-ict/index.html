@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SCP ICT</title>
+    <meta name="description" content="Game bay qua những cột mã lệnh. Ghi tên, phá kỷ lục và leo top bảng xếp hạng.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="game-title">
+            <div class="title-text">
+                <h1>SCP <span>ICT</span></h1>
+                <p class="subtitle">Bay qua những cột mã lệnh, leo top bảng xếp hạng 🏆</p>
+            </div>
+            <button id="mute" class="mute" type="button" aria-label="Bật/tắt âm thanh">🔊</button>
+        </header>
+
+        <main class="layout">
+            <div class="play-col">
+                <div class="game-screen">
+                    <canvas id="game" tabindex="0" aria-label="Màn chơi SCP ICT"></canvas>
+
+                    <!-- Nhập tên trước khi chơi -->
+                    <form id="nameForm" class="name-form" hidden>
+                        <div class="name-card">
+                            <h2>Bạn tên gì?</h2>
+                            <p>Tên này sẽ hiện trên bảng xếp hạng.</p>
+                            <label class="sr-only" for="playerName">Tên người chơi</label>
+                            <input id="playerName" name="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="Ví dụ: Bảo 11A1">
+                            <p id="nameError" class="name-error" hidden>Nhập tên trước đã nhé.</p>
+                            <button type="submit">▶ Bắt đầu</button>
+                        </div>
+                    </form>
+                </div>
+                <p class="player-line">Người chơi: <b id="who"></b> <button id="changeName" class="link-btn" type="button">Đổi tên</button></p>
+                <p id="description" class="game-description">Nhấn <kbd>Space</kbd> hoặc chạm vào màn hình để bay</p>
+            </div>
+
+            <section class="board" aria-labelledby="boardTitle">
+                <div class="board-head">
+                    <h2 id="boardTitle">🏆 Bảng xếp hạng</h2>
+                    <span class="board-file">leaderboard.json</span>
+                </div>
+                <ol id="boardList" class="board-list"></ol>
+                <p id="boardNote" class="board-note"></p>
+            </section>
+        </main>
+    </div>
+    <script src="config.js"></script>
+    <script src="leaderboard.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

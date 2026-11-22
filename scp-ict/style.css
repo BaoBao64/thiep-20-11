@@ -1,0 +1,301 @@
+:root {
+    color-scheme: dark;
+    --bg: #0b0f16;
+    --panel: #0d1117;
+    --panel-2: #161b22;
+    --line: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --orange: #ffb347;
+    --gold: #ffd27a;
+    --green: #3fb950;
+    --blue: #79c0ff;
+    --red: #ff7b72;
+}
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+html, body {
+    background-color: var(--bg);
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 0%, #1b2433 0%, var(--bg) 70%) fixed;
+    color: var(--text);
+    font-family: 'Baloo 2', system-ui, sans-serif;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding-block: 12px 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ===== Tiêu đề ===== */
+.game-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.game-title h1 {
+    margin: 0;
+    font-weight: 800;
+    font-size: 2.4em;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--orange);
+    text-shadow: 0 3px 0 #7a3d12;
+}
+.game-title h1 span {
+    color: var(--green);
+    text-shadow: 0 3px 0 #1a4d24;
+}
+.subtitle {
+    margin: 4px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gold);
+}
+.mute {
+    flex: none;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: inherit;
+    border-radius: 8px;
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+}
+
+/* ===== Bố cục: màn chơi + bảng xếp hạng (điện thoại thì xếp dọc) ===== */
+.layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px 28px;
+    width: 100%;
+    max-width: 760px;
+}
+.play-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* ===== Màn hình game =====
+   Canvas luôn giữ tỉ lệ 9:16 và co lại vừa màn hình điện thoại */
+.game-screen {
+    position: relative;
+    width: min(360px, calc(100vw - 32px), calc((100vh - 170px) * 9 / 16));
+    max-width: 100%;
+    aspect-ratio: 9 / 16;
+}
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .5), 0 0 0 1px var(--line);
+    touch-action: manipulation;
+    cursor: pointer;
+    outline: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+canvas:focus-visible {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .5), 0 0 0 2px var(--green);
+}
+.game-description, .player-line {
+    margin: 0;
+    color: var(--muted);
+    text-align: center;
+    font-size: 15px;
+}
+.player-line b {
+    color: var(--text);
+}
+.link-btn {
+    border: 0;
+    background: none;
+    color: var(--blue);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0 2px;
+}
+kbd {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--text);
+}
+
+/* ===== Ô nhập tên (đè lên màn chơi) ===== */
+.name-form {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(11, 15, 22, .72);
+    backdrop-filter: blur(3px);
+}
+.name-form[hidden] {
+    display: none;
+}
+.name-card {
+    width: 100%;
+    max-width: 290px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 18px;
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    text-align: center;
+}
+.name-card h2 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--orange);
+}
+.name-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+.name-card input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+    font: 600 17px 'Baloo 2', system-ui, sans-serif;
+    text-align: center;
+}
+.name-card input:focus {
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+}
+.name-card .name-error {
+    color: var(--red);
+}
+.name-card button {
+    margin-top: 4px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--green);
+    color: #04210c;
+    font: 700 15px 'JetBrains Mono', monospace;
+    cursor: pointer;
+}
+.name-card button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+/* ===== Bảng xếp hạng ===== */
+.board {
+    width: min(360px, 100%);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+}
+.board-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+}
+.board-head h2 {
+    margin: 0;
+    font-size: 19px;
+    color: var(--gold);
+}
+.board-file {
+    font: 500 11px 'JetBrains Mono', monospace;
+    color: var(--muted);
+}
+.board-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: 520px;
+    overflow-y: auto;
+}
+.board-list li {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    font-size: 16px;
+}
+.board-list li:nth-child(odd) {
+    background: rgba(255, 255, 255, .02);
+}
+.board-list li.me {
+    background: rgba(63, 185, 80, .14);
+    box-shadow: inset 3px 0 0 var(--green);
+}
+.board-list .rk {
+    font: 700 13px 'JetBrains Mono', monospace;
+    color: var(--muted);
+    text-align: center;
+}
+.board-list li:nth-child(-n+3) .rk {
+    font-size: 20px;
+}
+.board-list .nm {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+}
+.board-list .sc {
+    font: 700 16px 'JetBrains Mono', monospace;
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+}
+.board-list li.gap,
+.board-list li.empty {
+    display: block;
+    text-align: center;
+    color: var(--muted);
+}
+.board-note {
+    margin: 0;
+    padding: 8px 14px 12px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+}
